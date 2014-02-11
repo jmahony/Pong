@@ -2,6 +2,7 @@ package server;
 
 import common.*;
 
+import java.io.Serializable;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -26,13 +27,24 @@ class S_PongView implements Observer {
      * @param aPongModel Model of game
      * @param arg        Arguments - not used
      */
-    public void update(Observable aPongModel, Object arg) {
+    public synchronized void update(Observable aPongModel, Object arg) {
+        DEBUG.trace("Updating clients");
         S_PongModel model = (S_PongModel) aPongModel;
         ball = model.getBall();
         bats = model.getBats();
-        // Now need to send position of game objects to the client
-        //  as the model on the server has changed
+
+        // Now need to send position of game objects to the client as the model on the server has changed
+
+        GameObject[] state = new GameObject[3];
+
+        state[0] = bats[0];
+        state[1] = bats[1];
+        state[2] = ball;
+
+        left.put(state);
+        right.put(state);
+
     }
 
-
 }
+

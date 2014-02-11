@@ -3,6 +3,8 @@ package client;
 import common.*;
 
 import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.net.Socket;
 
 import common.GameObject;
 
@@ -12,6 +14,8 @@ import common.GameObject;
 public class C_PongController {
     private C_PongModel model;
     private C_PongView view;
+    private Socket socket;
+    private NetObjectWriter now;
 
     /**
      * Constructor
@@ -26,6 +30,17 @@ public class C_PongController {
     }
 
     /**
+     * Add the socket to the controller so we can send moves
+     *
+     * @param s The players socket
+     */
+    public void addSocket(Socket s) {
+
+        socket = s;
+
+    }
+
+    /**
      * Decide what to do for each key pressed
      *
      * @param keyCode The keycode of the key pressed
@@ -33,20 +48,41 @@ public class C_PongController {
     public void userKeyInteraction(int keyCode) {
         // Key typed includes specials, -ve
         // Char is ASCII value
-        switch (keyCode)              // Character is
-        {
-            case -KeyEvent.VK_LEFT:        // Left Arrow
-                break;
-            case -KeyEvent.VK_RIGHT:       // Right arrow
-                break;
-            case -KeyEvent.VK_UP:          // Up arrow
-                // Send to server
-                break;
-            case -KeyEvent.VK_DOWN:        // Down arrow
-                break;
-        }
-    }
 
+        try {
+
+            if (now == null) {
+
+                now = new NetObjectWriter(socket);
+
+            }
+
+            String action = null;
+
+            switch (keyCode) {
+                case -KeyEvent.VK_LEFT:
+                    break;
+                case -KeyEvent.VK_RIGHT:
+                    break;
+                case -KeyEvent.VK_UP:
+                    action = "u";
+                    break;
+                case -KeyEvent.VK_DOWN:
+                    action = "d";
+                    break;
+            }
+
+            DEBUG.trace("Key Pressed");
+
+            now.put(action);
+
+        } catch (IOException e) {
+
+            e.printStackTrace();
+
+        }
+
+    }
 
 }
 

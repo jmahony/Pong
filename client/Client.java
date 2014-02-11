@@ -10,6 +10,10 @@ import java.net.Socket;
  * Start the client that will display the game for a player
  */
 class Client {
+
+    final String host = "localhost";
+    final int port = 50000;
+
     public static void main(String args[]) {
         (new Client()).start();
     }
@@ -18,9 +22,9 @@ class Client {
      * Start the Client
      */
     public void start() {
-        DEBUG.set(true);
-        DEBUG.trace("Pong Client");
         DEBUG.set(false);
+        DEBUG.trace("Pong Client");
+
         C_PongModel model = new C_PongModel();
         C_PongView view = new C_PongView();
         C_PongController cont = new C_PongController(model, view);
@@ -38,9 +42,27 @@ class Client {
      * @param model Of the game
      * @param cont  Controller (MVC) of the Game
      */
-    public void makeContactWithServer(C_PongModel model,
-                                      C_PongController cont) {
+    public void makeContactWithServer(C_PongModel model, C_PongController cont) {
         // Also starts the Player task that get the current state
         //  of the game from the server
+
+        System.out.println("Client");
+
+        try {
+
+            Socket socket = new Socket(host, port);
+
+            cont.addSocket(socket);
+
+            Player player = new Player(model, socket);
+
+            player.start();
+
+        } catch (Exception e) {
+
+            System.out.println("Error: " + e.getMessage());
+
+        }
+
     }
 }
