@@ -37,8 +37,6 @@ class Player extends Thread {
         // Update model with this information, Redisplay model
         DEBUG.trace("Player.run");
 
-        pongModel.modelChanged();
-
         try {
 
             NetObjectReader nor = new NetObjectReader(socket);
@@ -49,8 +47,6 @@ class Player extends Thread {
 
                 GameObject[] ob = (GameObject[]) o;
 
-
-                //System.out.println(pongModel.getBall().getX());
                 GameObject[] state = (GameObject[]) o;
 
                 pongModel.setBats(new GameObject[] {state[0], state[1]});
