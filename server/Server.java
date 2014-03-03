@@ -109,9 +109,6 @@ class Player implements Runnable {
 
     private Socket socket;
 
-    private int i = 0;
-
-
     /**
      * Constructor
      *
