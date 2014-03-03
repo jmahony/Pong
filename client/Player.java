@@ -4,6 +4,7 @@ import common.*;
 import static common.Global.*;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.Socket;
 
 /**
@@ -45,13 +46,16 @@ class Player extends Thread {
 
                 Object o = nor.get();
 
-                GameObject[] ob = (GameObject[]) o;
-
-                GameObject[] state = (GameObject[]) o;
-
-                pongModel.setBats(new GameObject[] {state[0], state[1]});
-                pongModel.setBall(state[2]);
-
+                Serializable[] state = (Serializable[]) o;
+                
+                GameObject playerOneBat = (GameObject) state[0];
+                GameObject playerTwoBat = (GameObject) state[1];
+                GameObject ball         = (GameObject) state[2];
+                long timestamp          = (Long) state[3];
+                
+                pongModel.setBats(new GameObject[] {playerOneBat, playerTwoBat});
+                pongModel.setBall(ball);
+                pongModel.setTimestamp(timestamp);
                 pongModel.modelChanged();
 
             }

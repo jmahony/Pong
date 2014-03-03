@@ -35,13 +35,14 @@ class S_PongView implements Observer {
 
         // Now need to send position of game objects to the client as the model on the server has changed
 
-        GameObject[] state = new GameObject[3];
+        Serializable[] state = new Serializable[4];
 
         state[0] = bats[0];
         state[1] = bats[1];
         state[2] = ball;
-
+        state[3] = model.getTimestamp(0);
         left.put(state);
+        state[3] = model.getTimestamp(1);
         right.put(state);
 
     }
