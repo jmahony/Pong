@@ -21,6 +21,7 @@
 *.rar
 *.tar
 *.zip
+*.tgz
 
 # Logs and databases #
 ######################
@@ -42,3 +43,4 @@ out/*
 */out/**
 **/main/resources/external/*
 .idea
+html
