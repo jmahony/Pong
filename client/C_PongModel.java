@@ -12,7 +12,7 @@ import static common.Global.*;
 public class C_PongModel extends Observable {
     private GameObject ball = new GameObject(W / 2, H / 2, BALL_SIZE, BALL_SIZE);
     private GameObject bats[] = new GameObject[2];
-
+    private long timestamp;
 
     public C_PongModel() {
         bats[0] = new GameObject(60, H / 2, BAT_WIDTH, BAT_HEIGHT);
@@ -55,6 +55,22 @@ public class C_PongModel extends Observable {
         bats = theBats;
     }
 
+    /**
+     *
+     * @param _timestamp
+     */
+    public void setTimestamp(long _timestamp) {
+        timestamp = _timestamp;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public long getTimestamp() {
+        return timestamp;
+    }
+    
     /**
      * Cause update of view of game
      */

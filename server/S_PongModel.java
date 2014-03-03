@@ -15,7 +15,9 @@ public class S_PongModel extends Observable {
     private GameObject bats[] = new GameObject[2];
 
     private Thread activeModel;
-
+    
+    private long[] timestamps = new long[2];
+    
     public S_PongModel() {
         bats[0] = new GameObject(60, H / 2, BAT_WIDTH, BAT_HEIGHT);
         bats[1] = new GameObject(W - 60, H / 2, BAT_WIDTH, BAT_HEIGHT);
@@ -73,6 +75,24 @@ public class S_PongModel extends Observable {
      */
     public void setBat(int player, GameObject theBat) {
         bats[player] = theBat;
+    }
+
+    /**
+     * 
+     * @param player
+     * @param timestamp
+     */
+    public void setTimestamp(int player, long timestamp) {
+        timestamps[player] = timestamp;
+    }
+
+    /**
+     * 
+     * @param player
+     * @return
+     */
+    public long getTimestamp(int player) {
+        return timestamps[player];
     }
 
     /**
