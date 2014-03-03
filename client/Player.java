@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  * Individual player run as a separate thread to allow
  * updates immediately the bat is moved
@@ -29,6 +30,7 @@ class Player extends Thread {
         // The player needs to know this to be able to work
         pongModel = model;
         socket = s;
+        Object ArrayList;
         pings = new ArrayList<Long>();
     }
 
@@ -63,9 +65,11 @@ class Player extends Thread {
                 
                 if (lastTimestamp != timestamp) {
 
-                    pings.add(ping);
-
-                    pongModel.setPing(average(pings));
+                    addPing(ping);
+                    
+                    System.out.println(pings.size());
+                    
+                    pongModel.setPing(averagePing());
                     
                 }
                 
@@ -84,13 +88,28 @@ class Player extends Thread {
 
     }
     
-    public static long average(List<Long> list) {
+    private void addPing(long ping) {
         
-        long c = 0;
-
-        for (Long n : list) c =+ n;
+        if (pings.size() >= 50) {
+            
+            pings.remove(0);
+            pings.add(ping);
+            
+        } else {
+            
+            pings.add(ping);
+            
+        }
         
-        return c / list.size();
+    }
+    
+    private long averagePing() {
+        
+        int a = 0;
+        
+        for (Long ping : pings) a += ping;
+        
+        return a / pings.size();
         
     }
     
