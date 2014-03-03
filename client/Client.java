@@ -11,7 +11,14 @@ import java.net.Socket;
  */
 class Client {
 
+    /**
+     * The servers address
+     */
     final String host = "localhost";
+
+    /**
+     * The servers port
+     */
     final int port = 50000;
 
     public static void main(String args[]) {
@@ -43,15 +50,15 @@ class Client {
      * @param cont  Controller (MVC) of the Game
      */
     public void makeContactWithServer(C_PongModel model, C_PongController cont) {
-        // Also starts the Player task that get the current state
-        //  of the game from the server
 
-        System.out.println("Client");
+        DEBUG.trace("Client");
 
         try {
 
+            // Open a connection to the server
             Socket socket = new Socket(host, port);
 
+            // Pass a reference to the socket to the controller so it can send key presses
             cont.addSocket(socket);
 
             Player player = new Player(model, socket);

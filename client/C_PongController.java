@@ -12,9 +12,25 @@ import common.GameObject;
  * Pong controller, handles user interactions
  */
 public class C_PongController {
+
+    /**
+     * The pong model
+     */
     private C_PongModel model;
+
+    /**
+     * The pong view
+     */
     private C_PongView view;
+
+    /**
+     * The socket to the server
+     */
     private Socket socket;
+
+    /**
+     * NetObjectWriter to send message to the server
+     */
     private NetObjectWriter now;
 
     /**
@@ -51,6 +67,7 @@ public class C_PongController {
 
         try {
 
+            // If we haven't already initialised the net object writer, initialise it
             if (now == null) {
 
                 now = new NetObjectWriter(socket);
@@ -60,10 +77,6 @@ public class C_PongController {
             String action = null;
 
             switch (keyCode) {
-                case -KeyEvent.VK_LEFT:
-                    break;
-                case -KeyEvent.VK_RIGHT:
-                    break;
                 case -KeyEvent.VK_UP:
                     action = "u";
                     break;
@@ -74,11 +87,12 @@ public class C_PongController {
 
             DEBUG.trace("Key Pressed");
 
+            // Send the action to the server
             now.put(action);
 
         } catch (IOException e) {
 
-            e.printStackTrace();
+            System.out.println("Error: " + e.getMessage());
 
         }
 

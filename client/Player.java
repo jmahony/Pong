@@ -1,7 +1,6 @@
 package client;
 
 import common.*;
-import static common.Global.*;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -12,18 +11,24 @@ import java.net.Socket;
  */
 class Player extends Thread {
 
-    private C_PongModel pongModel;
+    /**
+     * The pong games model
+     */
+    private C_PongModel model;
+
+    /**
+     * The socket to the server
+     */
     private Socket socket;
 
     /**
      * Constructor
      *
-     * @param model - model of the game
+     * @param m - model of the game
      * @param s     - Socket used to communicate with server
      */
-    public Player(C_PongModel model, Socket s) {
-        // The player needs to know this to be able to work
-        pongModel = model;
+    public Player(C_PongModel m, Socket s) {
+        model = m;
         socket = s;
     }
 
@@ -33,8 +38,6 @@ class Player extends Thread {
      */
     public void run() {
 
-        // Listen to network to get the latest state of the game from the server
-        // Update model with this information, Redisplay model
         DEBUG.trace("Player.run");
 
         try {
@@ -43,16 +46,24 @@ class Player extends Thread {
 
             while (true) {
 
-                Object o = nor.get();
+                // Wait for the server to send the games state
+                // We will be getting a serialised array of GameObjects from the server
+                // 0 => player 0 bat
+                // 1 => player 1 bat
+                // 2 => ball
+                GameObject[] state = (GameObject[]) nor.get();
 
-                GameObject[] ob = (GameObject[]) o;
+                // Update both players bat positions
+                model.setBats(new GameObject[]{
+                    state[0],
+                    state[1]
+                });
 
-                GameObject[] state = (GameObject[]) o;
+                // Update the ball position
+                model.setBall(state[2]);
 
-                pongModel.setBats(new GameObject[] {state[0], state[1]});
-                pongModel.setBall(state[2]);
-
-                pongModel.modelChanged();
+                // Tell the model its changed
+                model.modelChanged();
 
             }
 

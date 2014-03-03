@@ -11,7 +11,15 @@ import common.*;
  * starts the play of the game
  */
 class Server {
+
+    /**
+     * Writer for each player
+     */
     private NetObjectWriter p0, p1;
+
+    /**
+     * The port the server will listen on
+     */
     final int port = 50000;
 
     public static void main(String args[]) {
@@ -113,20 +121,26 @@ class Player extends Thread {
 
             while (true) {
 
+                // Wait for a message from the player
                 Object o = nor.get();
 
                 if ( o == null ) break;
 
+                // Turn the message into a string
                 String message = (String) o;
 
-                System.out.println("Key Press Received from Player " + playerId);
+                DEBUG.trace("Key Press Received from Player " + playerId);
 
+                // Get the player bat
                 GameObject bat = pongModel.getBats()[playerId];
 
+                // If u (up) move bat Y - 10 else move bat Y + 10
                 bat.moveY(message.equals("u") ? -10 : 10);
 
+                // Update the model with the bat position
                 pongModel.setBat(playerId, bat);
 
+                // Tell the model its changed
                 pongModel.modelChanged();
 
             }
@@ -134,7 +148,7 @@ class Player extends Thread {
 
         } catch (IOException e) {
 
-            e.printStackTrace();
+            System.out.println("Error: " + e.getMessage());
 
         }
 
