@@ -74,7 +74,7 @@ public class C_PongController {
 
             DEBUG.trace("Key Pressed");
 
-            now.put(action);
+            now.put(action + ":" + System.currentTimeMillis());
 
         } catch (IOException e) {
 
