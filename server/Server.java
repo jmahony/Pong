@@ -2,6 +2,8 @@ package server;
 
 import java.io.IOException;
 import java.net.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import common.*;
 
@@ -11,8 +13,18 @@ import common.*;
  * starts the play of the game
  */
 class Server {
-    private NetObjectWriter p0, p1;
 
+    /**
+     * The number of players connected to the server.
+     * This is used to calculate the players number.
+     */
+    private int playerNo = 0;
+
+    /**
+     * The amount of games being played on the server
+     */
+    private int gamesNo = 0;
+    
     public static void main(String args[]) {
         (new Server()).start();
     }
@@ -24,45 +36,59 @@ class Server {
         DEBUG.set(false);
         DEBUG.trace("Pong Server");
         //DEBUG.set(false);
-        S_PongModel model = new S_PongModel();
 
-        makeContactWithClients(model);
+        makeContactWithClients();
 
-        S_PongView view = new S_PongView(p0, p1);
-        new S_PongController(model, view);
-
-        model.addObserver(view); // Add observer to the model
-        model.makeActiveObject(); // Start play
     }
 
     /**
      * Make contact with the clients who wish to play
      * Players will need to know about the model
-     *
-     * @param model Of the game
      */
-    public void makeContactWithClients(S_PongModel model) {
+    public void makeContactWithClients() {
 
         try {
 
+            ExecutorService es = Executors.newFixedThreadPool(Global.MAX_PLAYERS);
+
             ServerSocket ss = new ServerSocket(Global.PORT);
+            
+            while (true) {
 
-            Socket s0 = ss.accept();
+                S_PongModel model = new S_PongModel();
+                
+                Socket socketLeft = ss.accept();
+                
+                System.out.println("Player " + playerNo + " has connected");
+                
+                Runnable playerLeft = new Player(playerNo++ % 2, model, socketLeft);
 
-            p0 = new NetObjectWriter(s0);
+                NetObjectWriter nowPlayerLeft = new NetObjectWriter(socketLeft);
+                
+                es.execute(playerLeft);
 
-            Player playerOne = new Player(0, model, s0);
+                Socket socketRight = ss.accept();
 
-            playerOne.start();
+                System.out.println("Player " + playerNo + " has connected");
 
-            Socket s1 = ss.accept();
+                Runnable playerRight = new Player(playerNo++ % 2, model, socketRight);
 
-            p1 = new NetObjectWriter(s1);
+                NetObjectWriter nowPlayerRight = new NetObjectWriter(socketRight);
 
-            Player playerTwo = new Player(1, model, s1);
+                es.execute(playerRight);
 
-            playerTwo.start();
+                S_PongView view = new S_PongView(nowPlayerLeft, nowPlayerRight);
 
+                new S_PongController(model, view);
+
+                model.addObserver(view); // Add observer to the model
+
+                model.makeActiveObject(); // Start play
+                
+                System.out.println("Game no " + gamesNo++ + " created");
+
+            }
+            
         } catch (IOException e) {
 
             e.printStackTrace();
@@ -75,7 +101,7 @@ class Server {
  * Individual player run as a separate thread to allow
  * updates to the model when a player moves there bat
  */
-class Player extends Thread {
+class Player implements Runnable {
 
     final int playerId;
 
