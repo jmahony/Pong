@@ -1,51 +1,88 @@
 package client;
+
 import common.*;
 
 import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.net.Socket;
 
 import common.GameObject;
+
 /**
  * Pong controller, handles user interactions
  */
-public class C_PongController
-{
-  private C_PongModel model;
-  private C_PongView  view;
+public class C_PongController {
+    private C_PongModel model;
+    private C_PongView view;
+    private Socket socket;
+    private NetObjectWriter now;
 
-  /**
-   * Constructor
-   * @param aPongModel Model of game on client
-   * @param aPongView  View of game on client
-   */
-  public C_PongController( C_PongModel aPongModel, C_PongView aPongView)
-  {
-    model  = aPongModel;
-    view   = aPongView;
-    view.setPongController( this );  // View talks to controller
-  }
-
-  /**
-   * Decide what to do for each key pressed
-   * @param keyCode The keycode of the key pressed
-   */
-  public void userKeyInteraction(int keyCode )
-  {
-    // Key typed includes specials, -ve
-    // Char is ASCII value
-    switch ( keyCode )              // Character is
-    {
-      case -KeyEvent.VK_LEFT:        // Left Arrow
-        break;
-      case -KeyEvent.VK_RIGHT:       // Right arrow
-        break;
-      case -KeyEvent.VK_UP:          // Up arrow
-        // Send to server
-        break;
-      case -KeyEvent.VK_DOWN:        // Down arrow
-        break;
+    /**
+     * Constructor
+     *
+     * @param aPongModel Model of game on client
+     * @param aPongView  View of game on client
+     */
+    public C_PongController(C_PongModel aPongModel, C_PongView aPongView) {
+        model = aPongModel;
+        view = aPongView;
+        view.setPongController(this);  // View talks to controller
     }
-  }
-  
+
+    /**
+     * Add the socket to the controller so we can send moves
+     *
+     * @param s The players socket
+     */
+    public void addSocket(Socket s) {
+
+        socket = s;
+
+    }
+
+    /**
+     * Decide what to do for each key pressed
+     *
+     * @param keyCode The keycode of the key pressed
+     */
+    public void userKeyInteraction(int keyCode) {
+        // Key typed includes specials, -ve
+        // Char is ASCII value
+
+        try {
+
+            if (now == null) {
+
+                now = new NetObjectWriter(socket);
+
+            }
+
+            String action = null;
+
+            switch (keyCode) {
+                case -KeyEvent.VK_LEFT:
+                    break;
+                case -KeyEvent.VK_RIGHT:
+                    break;
+                case -KeyEvent.VK_UP:
+                    action = "u";
+                    break;
+                case -KeyEvent.VK_DOWN:
+                    action = "d";
+                    break;
+            }
+
+            DEBUG.trace("Key Pressed");
+
+            now.put(action);
+
+        } catch (IOException e) {
+
+            e.printStackTrace();
+
+        }
+
+    }
 
 }
 
