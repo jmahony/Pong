@@ -150,7 +150,7 @@ class Player implements Runnable {
                 System.out.println("Key Press Received from Player " + playerId);
                 
                 GameObject bat = pongModel.getBats()[playerId];
-                pongModel.setTimestamp(playerId, timestamp);
+                pongModel.setPing(playerId, timestamp);
                 
                 bat.moveY(-KeyEvent.VK_UP == keypress ? -10 : 10);
 

@@ -1,11 +1,12 @@
 package client;
 
 import common.*;
-import static common.Global.*;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Individual player run as a separate thread to allow
@@ -15,6 +16,7 @@ class Player extends Thread {
 
     private C_PongModel pongModel;
     private Socket socket;
+    private List<Long> pings;
     private long lastTimestamp;
 
     /**
@@ -27,6 +29,7 @@ class Player extends Thread {
         // The player needs to know this to be able to work
         pongModel = model;
         socket = s;
+        pings = new ArrayList<Long>();
     }
 
     /**
@@ -53,13 +56,21 @@ class Player extends Thread {
                 GameObject playerTwoBat = (GameObject) state[1];
                 GameObject ball         = (GameObject) state[2];
                 long timestamp          =  (Long) state[3];
-
+                long ping               = System.currentTimeMillis() - timestamp;
+                
                 pongModel.setBats(new GameObject[] {playerOneBat, playerTwoBat});
                 pongModel.setBall(ball);
+                
                 if (lastTimestamp != timestamp) {
-                    pongModel.setTimestamp(System.currentTimeMillis() - timestamp);
+
+                    pings.add(ping);
+
+                    pongModel.setPing(average(pings));
+                    
                 }
+                
                 pongModel.modelChanged();
+
                 
                 lastTimestamp = timestamp;
                 
@@ -72,4 +83,15 @@ class Player extends Thread {
         }
 
     }
+    
+    public static long average(List<Long> list) {
+        
+        long c = 0;
+
+        for (Long n : list) c =+ n;
+        
+        return c / list.size();
+        
+    }
+    
 }

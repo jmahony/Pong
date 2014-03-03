@@ -59,7 +59,7 @@ public class C_PongModel extends Observable {
      *
      * @param _timestamp
      */
-    public void setTimestamp(long _timestamp) {
+    public void setPing(long _timestamp) {
         timestamp = _timestamp;
     }
 
@@ -67,7 +67,7 @@ public class C_PongModel extends Observable {
      *
      * @return
      */
-    public long getTimestamp() {
+    public long getPing() {
         return timestamp;
     }
     

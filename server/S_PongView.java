@@ -40,9 +40,9 @@ class S_PongView implements Observer {
         state[0] = bats[0];
         state[1] = bats[1];
         state[2] = ball;
-        state[3] = model.getTimestamp(0);
+        state[3] = model.getPing(0);
         left.put(state);
-        state[3] = model.getTimestamp(1);
+        state[3] = model.getPing(1);
         right.put(state);
 
     }
