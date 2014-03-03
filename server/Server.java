@@ -138,14 +138,20 @@ class Player implements Runnable {
                 Object o = nor.get();
 
                 if ( o == null ) break;
-
+                
                 String message = (String) o;
 
+                String[] messages = message.split(":"); 
+                
+                String keypress = messages[0];
+                long timestamp = Long.parseLong(messages[1], 10);
+                
                 System.out.println("Key Press Received from Player " + playerId);
-
+                
                 GameObject bat = pongModel.getBats()[playerId];
-
-                bat.moveY(message.equals("u") ? -10 : 10);
+                pongModel.setTimestamp(playerId, timestamp);
+                
+                bat.moveY(keypress.equals("u") ? -10 : 10);
 
                 pongModel.setBat(playerId, bat);
 
