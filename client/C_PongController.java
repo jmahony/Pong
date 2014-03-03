@@ -57,24 +57,9 @@ public class C_PongController {
 
             }
 
-            String action = null;
-
-            switch (keyCode) {
-                case -KeyEvent.VK_LEFT:
-                    break;
-                case -KeyEvent.VK_RIGHT:
-                    break;
-                case -KeyEvent.VK_UP:
-                    action = "u";
-                    break;
-                case -KeyEvent.VK_DOWN:
-                    action = "d";
-                    break;
-            }
-
             DEBUG.trace("Key Pressed");
 
-            now.put(action + ":" + System.currentTimeMillis());
+            now.put(keyCode + ":" + System.currentTimeMillis());
 
         } catch (IOException e) {
 

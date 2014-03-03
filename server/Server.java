@@ -1,5 +1,6 @@
 package server;
 
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.net.*;
 import java.util.concurrent.ExecutorService;
@@ -143,7 +144,7 @@ class Player implements Runnable {
 
                 String[] messages = message.split(":"); 
                 
-                String keypress = messages[0];
+                int keypress = Integer.parseInt(messages[0], 10);
                 long timestamp = Long.parseLong(messages[1], 10);
                 
                 System.out.println("Key Press Received from Player " + playerId);
@@ -151,7 +152,7 @@ class Player implements Runnable {
                 GameObject bat = pongModel.getBats()[playerId];
                 pongModel.setTimestamp(playerId, timestamp);
                 
-                bat.moveY(keypress.equals("u") ? -10 : 10);
+                bat.moveY(-KeyEvent.VK_UP == keypress ? -10 : 10);
 
                 pongModel.setBat(playerId, bat);
 
