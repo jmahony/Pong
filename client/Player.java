@@ -15,6 +15,7 @@ class Player extends Thread {
 
     private C_PongModel pongModel;
     private Socket socket;
+    private long lastTimestamp;
 
     /**
      * Constructor
@@ -45,19 +46,23 @@ class Player extends Thread {
             while (true) {
 
                 Object o = nor.get();
-
+                
                 Serializable[] state = (Serializable[]) o;
                 
                 GameObject playerOneBat = (GameObject) state[0];
                 GameObject playerTwoBat = (GameObject) state[1];
                 GameObject ball         = (GameObject) state[2];
-                long timestamp          = (Long) state[3];
-                
+                long timestamp          =  (Long) state[3];
+
                 pongModel.setBats(new GameObject[] {playerOneBat, playerTwoBat});
                 pongModel.setBall(ball);
-                pongModel.setTimestamp(timestamp);
+                if (lastTimestamp != timestamp) {
+                    pongModel.setTimestamp(System.currentTimeMillis() - timestamp);
+                }
                 pongModel.modelChanged();
-
+                
+                lastTimestamp = timestamp;
+                
             }
 
         } catch (IOException e) {
