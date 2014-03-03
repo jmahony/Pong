@@ -11,9 +11,6 @@ import java.net.Socket;
  */
 class Client {
 
-    final String host = "localhost";
-    final int port = 50000;
-
     public static void main(String args[]) {
         (new Client()).start();
     }
@@ -50,7 +47,7 @@ class Client {
 
         try {
 
-            Socket socket = new Socket(host, port);
+            Socket socket = new Socket(Global.HOST, Global.PORT);
 
             cont.addSocket(socket);
 

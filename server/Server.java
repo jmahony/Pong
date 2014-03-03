@@ -12,7 +12,6 @@ import common.*;
  */
 class Server {
     private NetObjectWriter p0, p1;
-    final int port = 50000;
 
     public static void main(String args[]) {
         (new Server()).start();
@@ -46,7 +45,7 @@ class Server {
 
         try {
 
-            ServerSocket ss = new ServerSocket(port);
+            ServerSocket ss = new ServerSocket(Global.PORT);
 
             Socket s0 = ss.accept();
 
