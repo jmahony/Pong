@@ -51,33 +51,31 @@ class Player extends Thread {
             while (true) {
 
                 Object o = nor.get();
-                
+
                 Serializable[] state = (Serializable[]) o;
-                
+
                 GameObject playerOneBat = (GameObject) state[0];
                 GameObject playerTwoBat = (GameObject) state[1];
                 GameObject ball         = (GameObject) state[2];
-                long timestamp          =  (Long) state[3];
+                long timestamp          = (Long) state[3];
                 long ping               = System.currentTimeMillis() - timestamp;
-                
+
                 pongModel.setBats(new GameObject[] {playerOneBat, playerTwoBat});
                 pongModel.setBall(ball);
-                
+
                 if (lastTimestamp != timestamp) {
 
                     addPing(ping);
-                    
-                    System.out.println(pings.size());
-                    
+
                     pongModel.setPing(averagePing());
-                    
+
                 }
-                
+
                 pongModel.modelChanged();
 
-                
+
                 lastTimestamp = timestamp;
-                
+
             }
 
         } catch (IOException e) {
@@ -87,30 +85,30 @@ class Player extends Thread {
         }
 
     }
-    
+
     private void addPing(long ping) {
-        
+
         if (pings.size() >= 50) {
-            
+
             pings.remove(0);
             pings.add(ping);
-            
+
         } else {
-            
+
             pings.add(ping);
-            
+
         }
-        
+
     }
-    
+
     private long averagePing() {
-        
+
         int a = 0;
-        
+
         for (Long ping : pings) a += ping;
-        
+
         return a / pings.size();
-        
+
     }
-    
+
 }
