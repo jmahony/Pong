@@ -25,7 +25,7 @@ class Server {
      * The amount of games being played on the server
      */
     private int gamesNo = 0;
-    
+
     public static void main(String args[]) {
         (new Server()).start();
     }
@@ -53,19 +53,19 @@ class Server {
             ExecutorService es = Executors.newFixedThreadPool(Global.MAX_PLAYERS);
 
             ServerSocket ss = new ServerSocket(Global.PORT);
-            
+
             while (true) {
 
                 S_PongModel model = new S_PongModel();
-                
+
                 Socket socketLeft = ss.accept();
-                
+
                 System.out.println("Player " + playerNo + " has connected");
-                
+
                 Runnable playerLeft = new Player(playerNo++ % 2, model, socketLeft);
 
                 NetObjectWriter nowPlayerLeft = new NetObjectWriter(socketLeft);
-                
+
                 es.execute(playerLeft);
 
                 Socket socketRight = ss.accept();
@@ -85,11 +85,11 @@ class Server {
                 model.addObserver(view); // Add observer to the model
 
                 model.makeActiveObject(); // Start play
-                
+
                 System.out.println("Game no " + gamesNo++ + " created");
 
             }
-            
+
         } catch (IOException e) {
 
             e.printStackTrace();
@@ -139,19 +139,21 @@ class Player implements Runnable {
                 Object o = nor.get();
 
                 if ( o == null ) break;
-                
+
                 String message = (String) o;
 
-                String[] messages = message.split(":"); 
-                
-                int keypress = Integer.parseInt(messages[0], 10);
+                String[] messages = message.split(":");
+
+                int keypress   = Integer.parseInt(messages[0], 10);
                 long timestamp = Long.parseLong(messages[1], 10);
-                
+                long avgPing   = Long.parseLong(messages[2], 10);
+
                 System.out.println("Key Press Received from Player " + playerId);
-                
+
                 GameObject bat = pongModel.getBats()[playerId];
                 pongModel.setPing(playerId, timestamp);
-                
+                pongModel.setAvgPing(playerId, avgPing);
+
                 bat.moveY(-KeyEvent.VK_UP == keypress ? -10 : 10);
 
                 pongModel.setBat(playerId, bat);
