@@ -45,6 +45,9 @@ class S_PongView implements Observer {
         state[3] = model.getPing(1);
         right.put(state);
 
+        System.out.println("Player 0 avg ping: " + ((S_PongModel) aPongModel).getAvgPing(0));
+        System.out.println("Player 1 avg ping: " + ((S_PongModel) aPongModel).getAvgPing(1));
+
     }
 
 }
