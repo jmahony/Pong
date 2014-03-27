@@ -44,4 +44,8 @@ out/*
 **/main/resources/external/*
 .idea
 html
-out
+/out
+./out/*
+.idea/*
+/.idea
+./.idea/*
