@@ -49,7 +49,7 @@ class S_ActiveModel implements Runnable {
 
                 pongModel.modelChanged();      // Model changed refresh screen
 
-                Thread.sleep(20);            // About 50 Hz
+                Thread.sleep(GAME_TICK);            // About 50 Hz
             }
         } catch (Exception e) {
         }

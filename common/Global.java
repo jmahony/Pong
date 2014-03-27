@@ -19,8 +19,10 @@ public class Global {
     //  but should be user settable
     public static final int PORT = 50001;       // Port
     public static final String HOST = "localhost"; // M/C Name
-    
+
     public static final int MAX_PLAYERS = 4; // The maximum amount of players allowed to connect
-    
+
+    public static final int GAME_TICK = 20;
+
 }
 
