@@ -16,8 +16,24 @@ public class S_PongModel extends Observable {
 
     private Thread activeModel;
 
-    private long[] pings    = new long[2];
-    private long[] avgPings = new long[2];
+    private long[] pings     = new long[2];
+    private long[] avgPings  = new long[2];
+
+    /**
+     * Which player needs the view update delayed
+     */
+    public int playerToDelay = -1;
+
+    /**
+     * How many ms the last delay was, so we can calculate the players
+     * ring round trip time
+     */
+    public int artificalDelayAmount = 0;
+
+    /**
+     * How many ticks the player should miss
+     */
+    public int delayAmount = -1;
 
     public S_PongModel() {
         bats[0] = new GameObject(60, H / 2, BAT_WIDTH, BAT_HEIGHT);
@@ -112,6 +128,43 @@ public class S_PongModel extends Observable {
      */
     public long getAvgPing(int player) {
         return avgPings[player];
+    }
+
+    /**
+     *
+     * Decides which player to delay and by how many game ticks
+     *
+     * @return index position of player to delay
+     */
+    public void setPlayerToDelay() {
+
+        long p0 = getAvgPing(0),
+             p1 = getAvgPing(1);
+
+        if (p0 == p1) {
+
+            playerToDelay = -1; // Delay neither
+            delayAmount = -1;
+
+        } else if(p0 > p1) {
+
+            // Delay player 0
+            playerToDelay = 1;
+            p1 = p1 - artificalDelayAmount;
+            artificalDelayAmount = (int)(p0 - p1);
+            delayAmount = (artificalDelayAmount / 2) / GAME_TICK;
+
+
+        } else {
+
+            // Delay player 1
+            playerToDelay = 0;
+            p0 = p0 - artificalDelayAmount;
+            artificalDelayAmount = (int)(p1 - p0) / 2;
+            delayAmount = artificalDelayAmount / GAME_TICK;
+
+        }
+
     }
 
     /**

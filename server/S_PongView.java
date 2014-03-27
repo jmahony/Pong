@@ -33,20 +33,37 @@ class S_PongView implements Observer {
         ball = model.getBall();
         bats = model.getBats();
 
-        // Now need to send position of game objects to the client as the model on the server has changed
-
         Serializable[] state = new Serializable[4];
 
         state[0] = bats[0];
         state[1] = bats[1];
         state[2] = ball;
-        state[3] = model.getPing(0);
-        left.put(state);
-        state[3] = model.getPing(1);
-        right.put(state);
 
-        System.out.println("Player 0 avg ping: " + ((S_PongModel) aPongModel).getAvgPing(0));
-        System.out.println("Player 1 avg ping: " + ((S_PongModel) aPongModel).getAvgPing(1));
+        // Now need to send position of game objects to the client as the model on the server has changed
+
+        // Check if set need to update the player to delay
+        if ((model.delayAmount == -1 && model.playerToDelay == -1)) {
+            model.setPlayerToDelay();
+        }
+
+        // See if we're allowed to update player 0
+        if (model.playerToDelay != 0 || model.playerToDelay == 0 && model.delayAmount == -1) {
+            state[3] = model.getPing(0);
+            left.put(state);
+        }
+
+        // See if we're allowed to update player 1
+        if (model.playerToDelay != 1 || model.playerToDelay == 1 && model.delayAmount == -1) {
+            state[3] = model.getPing(1);
+            right.put(state);
+        }
+
+        // If the delay for the delayed player has not concluded, decrement the delay amount
+        if (model.delayAmount > -1) {
+            model.delayAmount--;
+        } else { // Else reset the delay amount
+            model.playerToDelay = -1;
+        }
 
     }
 
