@@ -41,14 +41,40 @@ class S_PongView implements Observer {
         state[1] = bats[1];
         state[2] = ball;
         state[3] = model.getPing(0);
-        left.put(state);
+        (new Thread(new NetworkDelay(left, state, 100))).start();
         state[3] = model.getPing(1);
-        right.put(state);
-
-        System.out.println("Player 0 avg ping: " + ((S_PongModel) aPongModel).getAvgPing(0));
-        System.out.println("Player 1 avg ping: " + ((S_PongModel) aPongModel).getAvgPing(1));
+        (new Thread(new NetworkDelay(right, state, 100))).start();
 
     }
 
 }
 
+
+class NetworkDelay implements Runnable {
+
+    private NetObjectWriter now;
+    private long delay = 0;
+    private Object payload;
+
+    public NetworkDelay(NetObjectWriter now, Object payload, long delay) {
+        this.now = now;
+        this.delay = delay;
+        this.payload = payload;
+    }
+
+    @Override public void run() {
+
+        try {
+
+            Thread.sleep(delay);
+
+            now.put(payload);
+
+        } catch (InterruptedException e) {
+
+            e.printStackTrace();
+
+        }
+
+    }
+}
