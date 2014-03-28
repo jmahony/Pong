@@ -16,8 +16,8 @@ public class S_PongModel extends Observable {
 
     private Thread activeModel;
 
-    private long[] pings    = new long[2];
-    private long[] avgPings = new long[2];
+    private long[] lastPingTimestamp = new long[2];
+    private long[] averagePings = new long[2];
 
     public S_PongModel() {
         bats[0] = new GameObject(60, H / 2, BAT_WIDTH, BAT_HEIGHT);
@@ -81,10 +81,10 @@ public class S_PongModel extends Observable {
     /**
      *
      * @param player
-     * @param _ping
+     * @param timestamp
      */
-    public void setPing(int player, long _ping) {
-        pings[player] = _ping;
+    public void setLastPingTimestamp(int player, long timestamp) {
+        lastPingTimestamp[player] = timestamp;
     }
 
     /**
@@ -92,17 +92,17 @@ public class S_PongModel extends Observable {
      * @param player
      * @return
      */
-    public long getPing(int player) {
-        return pings[player];
+    public long getLastPingTimestamp(int player) {
+        return lastPingTimestamp[player];
     }
 
     /**
      *
      * @param player
-     * @param _ping
+     * @param averagePing
      */
-    public void setAvgPing(int player, long _ping) {
-        avgPings[player] = _ping;
+    public void setAveragePing(int player, long averagePing) {
+        averagePings[player] = averagePing;
     }
 
     /**
@@ -110,8 +110,8 @@ public class S_PongModel extends Observable {
      * @param player
      * @return
      */
-    public long getAvgPing(int player) {
-        return avgPings[player];
+    public long getAveragePing(int player) {
+        return averagePings[player];
     }
 
     /**

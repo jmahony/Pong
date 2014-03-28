@@ -41,18 +41,18 @@ class S_PongView implements Observer {
             bats[0],
             bats[1],
             ball,
-            model.getPing(0)
+            model.getLastPingTimestamp(0)
         };
 
         rightState = new Serializable[] {
             bats[0],
             bats[1],
             ball,
-            model.getPing(1)
+            model.getLastPingTimestamp(1)
         };
 
-        long leftAvgPing  = model.getAvgPing(0),
-             rightAvgPing = model.getAvgPing(1);
+        long leftAvgPing  = model.getAveragePing(0),
+             rightAvgPing = model.getAveragePing(1);
 
         long leftDelay  = (rightAvgPing - leftAvgPing),
              rightDelay = (leftAvgPing - rightAvgPing);
