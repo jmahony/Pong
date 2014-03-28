@@ -51,39 +51,15 @@ class S_PongView implements Observer {
             model.getPing(1)
         };
 
-        (new Thread(new NetworkDelay(left, leftState, 100))).start();
-        (new Thread(new NetworkDelay(right, rightState, 100))).start();
+        long leftAvgPing  = model.getAvgPing(0),
+             rightAvgPing = model.getAvgPing(1);
+
+        long leftDelay  = (rightAvgPing - leftAvgPing),
+             rightDelay = (leftAvgPing - rightAvgPing);
+
+        left.put(leftState,   leftDelay);
+        right.put(rightState, rightDelay);
 
     }
 
-}
-
-
-class NetworkDelay implements Runnable {
-
-    private NetObjectWriter now;
-    private long delay = 0;
-    private Object payload;
-
-    public NetworkDelay(NetObjectWriter now, Object payload, long delay) {
-        this.now = now;
-        this.delay = delay;
-        this.payload = payload;
-    }
-
-    @Override public void run() {
-
-        try {
-
-            Thread.sleep(delay);
-
-            now.put(payload);
-
-        } catch (InterruptedException e) {
-
-            e.printStackTrace();
-
-        }
-
-    }
 }
