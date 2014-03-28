@@ -154,7 +154,8 @@ class Player implements Runnable {
                 pongModel.setPing(playerId, timestamp);
                 pongModel.setAvgPing(playerId, avgPing);
 
-                bat.moveY(-KeyEvent.VK_UP == keypress ? -10 : 10);
+                // TODO: Fix this, any key than up moves the bat down, Its not wrong though!
+                bat.moveY(-KeyEvent.VK_UP == keypress ? -Global.BAT_MOVE : Global.BAT_MOVE);
 
                 pongModel.setBat(playerId, bat);
 
