@@ -28,5 +28,34 @@ public class NetObjectWriter extends ObjectOutputStream {
             return false;                           // Failed write
         }
     }
-}
 
+    public void put(final Object data, final long delay) {
+
+        if (delay < 1) {
+
+            put(data);
+
+        } else {
+
+            (new Thread(new Runnable() {
+                @Override public void run() {
+
+                    try {
+
+                        Thread.sleep(delay);
+
+                        NetObjectWriter.this.put(data);
+
+                    } catch (InterruptedException e) {
+
+                        e.printStackTrace();
+
+                    }
+                }
+            })).start();
+
+        }
+
+    }
+
+}
