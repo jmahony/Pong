@@ -68,6 +68,7 @@ class Player extends Thread {
                     addPing(ping);
 
                     pongModel.setAveragePing(averagePing());
+                    pongModel.setLastRequestRTT(ping);
 
                 }
 
