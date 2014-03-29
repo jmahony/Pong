@@ -13,6 +13,7 @@ public class C_PongModel extends Observable {
     private GameObject ball = new GameObject(W / 2, H / 2, BALL_SIZE, BALL_SIZE);
     private GameObject bats[] = new GameObject[2];
     private long averagePing;
+    private long lastRequestRTT;
 
     public C_PongModel() {
         bats[0] = new GameObject(60, H / 2, BAT_WIDTH, BAT_HEIGHT);
@@ -70,6 +71,18 @@ public class C_PongModel extends Observable {
     public long getAveragePing() {
         return averagePing;
     }
+
+    /**
+     *
+     * @return
+     */
+    public long getLastRequestRTT() { return lastRequestRTT; }
+
+    /**
+     *
+     * @param lastRequestRTT
+     */
+    public void setLastRequestRTT(long lastRequestRTT) { this.lastRequestRTT = lastRequestRTT; }
 
     /**
      * Cause update of view of game

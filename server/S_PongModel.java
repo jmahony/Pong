@@ -18,6 +18,7 @@ public class S_PongModel extends Observable {
 
     private long[] lastPingTimestamp = new long[2];
     private long[] averagePings = new long[2];
+    private long[] lastRequestRTT = new long[2];
 
     public S_PongModel() {
         bats[0] = new GameObject(60, H / 2, BAT_WIDTH, BAT_HEIGHT);
@@ -115,6 +116,20 @@ public class S_PongModel extends Observable {
     }
 
     /**
+     *
+     * @param playerId
+     * @param roundTripTime
+     */
+    public void setLastRequestRTT(int playerId, long roundTripTime) { lastRequestRTT[playerId] = roundTripTime; }
+
+    /**
+     *
+     * @param playerId
+     * @return
+     */
+    public long getLastRequestRTT(int playerId) { return lastRequestRTT[playerId]; }
+
+    /**
      * Cause update of view of game
      */
     public void modelChanged() {
@@ -122,5 +137,6 @@ public class S_PongModel extends Observable {
         setChanged();
         notifyObservers();
     }
+
 
 }

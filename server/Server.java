@@ -144,15 +144,17 @@ class Player implements Runnable {
 
                 String[] messages = message.split(":");
 
-                int keypress   = Integer.parseInt(messages[0], 10);
-                long timestamp = Long.parseLong(messages[1], 10);
-                long avgPing   = Long.parseLong(messages[2], 10);
+                int keypress       = Integer.parseInt(messages[0], 10);
+                long timestamp     = Long.parseLong(messages[1], 10);
+                long avgPing       = Long.parseLong(messages[2], 10);
+                long roundTripTime = Long.parseLong(messages[3], 10);
 
                 System.out.println("Key Press Received from Player " + playerId);
 
                 GameObject bat = pongModel.getBats()[playerId];
                 pongModel.setLastPingTimestamp(playerId, timestamp);
                 pongModel.setAveragePing(playerId, avgPing);
+                pongModel.setLastRequestRTT(playerId, roundTripTime);
 
                 // TODO: Fix this, any key than up moves the bat down, Its not wrong though!
                 bat.moveY(-KeyEvent.VK_UP == keypress ? -Global.BAT_MOVE : Global.BAT_MOVE);

@@ -56,7 +56,8 @@ public class C_PongController {
 
             DEBUG.trace("Key Pressed");
 
-            now.put(keyCode + ":" + System.currentTimeMillis() + ":" + model.getAveragePing());
+            now.put(keyCode + ":" + System.currentTimeMillis() + ":" + model.getAveragePing() + ":" +
+                    model.getLastRequestRTT());
 
         } catch (IOException e) {
 
