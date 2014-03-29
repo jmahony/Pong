@@ -15,12 +15,34 @@ public class Global {
 
     public static final double BAT_MOVE = 5;       // Each move is
 
-    // Of course this should not be a constant
-    //  but should be user settable
+
+    /**
+     * Which port the should be used, this should be passed in as a parameter to
+     * both client and server
+     */
     public static final int PORT = 50001;       // Port
-    public static final String HOST = "localhost"; // M/C Name
-    
-    public static final int MAX_PLAYERS = 4; // The maximum amount of players allowed to connect
-    
+
+    /**
+     * The servers IP
+     */
+    public static final String HOST = "localhost";
+
+    /**
+     * The max amount of players on the server
+     */
+    public static final int MAX_PLAYERS = 4;
+
+    /**
+     * Helper constants for the player ids, so we are always calling the players
+     * either left or right rather than 0 or 1.
+     */
+    public static final int LEFT_PLAYER = 0;
+    public static final int RIGHT_PLAYER = 1;
+
+    /**
+     * Whether or not to enable delay compensation on the server
+     */
+    public static final boolean DELAY_COMPENSATION = true;
+
 }
 
