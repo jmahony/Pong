@@ -2,11 +2,8 @@ package client;
 
 import common.*;
 
-import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.net.Socket;
-
-import common.GameObject;
 
 /**
  * Pong controller, handles user interactions
@@ -59,7 +56,7 @@ public class C_PongController {
 
             DEBUG.trace("Key Pressed");
 
-            now.put(keyCode + ":" + System.currentTimeMillis() + ":" + model.getPing());
+            now.put(keyCode + ":" + System.currentTimeMillis() + ":" + model.getAveragePing());
 
         } catch (IOException e) {
 

@@ -67,7 +67,7 @@ class Player extends Thread {
 
                     addPing(ping);
 
-                    pongModel.setPing(averagePing());
+                    pongModel.setAveragePing(averagePing());
 
                 }
 
