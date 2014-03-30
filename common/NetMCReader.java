@@ -8,7 +8,7 @@ import java.net.MulticastSocket;
 /**
  * Multicast reader
  */
-class NetMCReader {
+public class NetMCReader implements NetObjectReader {
 
     private MulticastSocket socket = null;
     private InetAddress group = null;
@@ -28,11 +28,15 @@ class NetMCReader {
     }
 
 
-    public synchronized String get() throws IOException {
+    public synchronized String get() {
         DEBUG.trace("MCRead: on port [%d]", port);
         byte[] buf = new byte[512];
         DatagramPacket packet = new DatagramPacket(buf, buf.length);
-        socket.receive(packet);
+        try {
+            socket.receive(packet);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         String m = new String(packet.getData(), 0, packet.getLength());
         DEBUG.trace("MCRead: Read <%s>", m);
