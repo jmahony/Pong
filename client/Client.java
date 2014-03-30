@@ -16,9 +16,22 @@ abstract class Client {
             addOption(OptionBuilder.
                 withArgName("port").
                 hasArg().
-                withDescription("If you want to spectate").create("s"));
-            addOption("h",   true,  "The hostname of the server");
-            addOption("ddc", false, "disable delay compensation");
+                withDescription("If you want to spectate").
+                create("p"));
+
+            addOption(OptionBuilder.
+                withArgName("port").
+                hasArg().
+                withDescription("If you want to spectate").
+                create("s"));
+
+            addOption(OptionBuilder.
+                withArgName("host").
+                hasArg().
+                withDescription("The hostname of the server").
+                create("host"));
+
+            addOption("ddc", false, "Disable delay compensation");
         }};
 
         CommandLineParser parser = new GnuParser();
@@ -45,7 +58,7 @@ abstract class Client {
 
             // Can't do multicast and delay compensation
             Global.delay_compensation = false;
-
+            System.out.println("Starting MC Client");
             (new ClientMC()).start();
 
         // If option s, go into spectate mode and watch on the supplied port
@@ -53,10 +66,12 @@ abstract class Client {
 
             String port = cmd.getOptionValue("s");
 
+            System.out.println("Starting Spectator Client");
             (new ClientSpectator(Integer.parseInt(port))).start();
 
         } else {
 
+            System.out.println("Starting TCP Client");
             (new ClientTCP()).start();
 
         }
@@ -76,8 +91,8 @@ abstract class Client {
 
         makeContactWithServer(model, cont);
 
-        model.addObserver(view);       // Add observer to the model
-        view.setVisible(true);           // Display Screen
+        model.addObserver(view);
+        view.setVisible(true);
     }
 
     /**

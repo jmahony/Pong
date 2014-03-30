@@ -31,6 +31,9 @@ class C_PongView extends JFrame implements Observer {
     GameObject[] bats;
     public long ping;
 
+    /**
+     * Constructor
+     */
     public C_PongView() {
         setSize(W, H);                        // Size of window
         addKeyListener(new Transaction());    // Called when key press

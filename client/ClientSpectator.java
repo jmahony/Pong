@@ -3,13 +3,12 @@ package client;
 import common.DEBUG;
 import common.Global;
 import common.NetMCReader;
-import common.NetObjectReader;
 
 import java.io.IOException;
 
 /**
  * ClientSpectator simply observes a game on the given port, no connections
- * are made to the server
+ * are made to the server.
  */
 class ClientSpectator extends Client {
 
@@ -19,7 +18,7 @@ class ClientSpectator extends Client {
     private final int gameMCPort;
 
     /**
-     * Takes in the port to listen to
+     * Constructor
      *
      * @param gameMCPort
      */
@@ -31,11 +30,11 @@ class ClientSpectator extends Client {
 
     /**
      * Start the Client
-     * Create the pong model, view and controller and initiates.
      */
+    @Override
     public void start() {
-
         DEBUG.set(false);
+        DEBUG.trace("Pong Client");
 
         C_PongModel model = new C_PongModel();
         C_PongView view = new C_PongView();
@@ -43,9 +42,8 @@ class ClientSpectator extends Client {
 
         makeContactWithServer(model, cont);
 
-        model.addObserver(view);       // Add observer to the model
-        view.setVisible(true);           // Display Screen
-
+        model.addObserver(view);
+        view.setVisible(true);
     }
 
     /**
@@ -63,11 +61,11 @@ class ClientSpectator extends Client {
 
         try {
 
-            NetObjectReader bnor = new NetMCReader(gameMCPort, Global.MC_ADDRESS);
+            NetMCReader bnor = new NetMCReader(gameMCPort, Global.MC_ADDRESS);
 
-            Player player = new Player(model, bnor, Global.SPECTATOR);
+            Spectator spectator = new Spectator(model, bnor);
 
-            player.start();
+            spectator.start();
 
         } catch (IOException e) {
 
@@ -80,4 +78,3 @@ class ClientSpectator extends Client {
     }
 
 }
-

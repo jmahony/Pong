@@ -10,24 +10,57 @@ import java.net.MulticastSocket;
  */
 public class NetMCReader implements NetObjectReader {
 
+    /**
+     * The multicast socket
+     */
     private MulticastSocket socket = null;
-    private InetAddress group = null;
+
+    /**
+     * The multicast address to listen on
+     */
+    private InetAddress address = null;
+
+    /**
+     * The port to listen on
+     */
     private int port = 0;
 
-    public NetMCReader(int aPort, String mca) throws IOException {
-        port = aPort;
-        DEBUG.trace("MCRead: C port [%s] MCA [%s]", port, mca);
+    /**
+     * Constructor
+     *
+     * @param port the port to listen on
+     * @param address the multicast address to listen on
+     * @throws IOException
+     */
+    public NetMCReader(int port, String address) throws IOException {
+
+        DEBUG.trace("MCRead: C port [%s] MCA [%s]", port, address);
+
+        this.port = port;
         socket = new MulticastSocket(port);
-        group = InetAddress.getByName(mca);
-        socket.joinGroup(group);
+        this.address = InetAddress.getByName(address);
+        socket.joinGroup(this.address);
+
     }
 
+    /**
+     * Stops listening to the multicast broadcast
+     *
+     * @throws IOException
+     */
     public void close() throws IOException {
-        socket.leaveGroup(group);
+
+        socket.leaveGroup(address);
         socket.close();
+
     }
 
 
+    /**
+     * Waits for a message from the server
+     *
+     * @return the message from the server
+     */
     public synchronized Object get() {
 
         DEBUG.trace("MCRead: on port [%d]", port);

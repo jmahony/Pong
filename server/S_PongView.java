@@ -71,11 +71,11 @@ class S_PongView implements Observer {
             bats[0],
             bats[1],
             ball,
-            model.getLastPingTimestamp(Global.LEFT_PLAYER) + ":" +
+            model.getLastPingTimestamp(Global.LEFT_PLAYER) + Global.DELIMITER +
             model.getLastPingTimestamp(Global.RIGHT_PLAYER)
         };
 
-        if (Global.delay_compensation) {
+        if (Global.delay_compensation ) {
 
             // Get both players average ping
             // e.g. leftAvgPing = 200

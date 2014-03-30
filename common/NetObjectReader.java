@@ -1,7 +1,7 @@
 package common;
 
 /**
- * Created by josh on 30/03/14.
+ * Provide a common interface for receiving communications
  */
 public interface NetObjectReader {
 

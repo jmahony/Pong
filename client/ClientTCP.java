@@ -8,7 +8,8 @@ import java.io.Serializable;
 import java.net.Socket;
 
 /**
- * Start the client that will display the game for a player
+ * ClientTCP sets up/joins a game on the server. Moves and updates are
+ * sent/received over TCP.
  */
 class ClientTCP extends Client {
 
@@ -21,8 +22,6 @@ class ClientTCP extends Client {
      */
     @Override
     public void makeContactWithServer(C_PongModel model, C_PongController cont) {
-        // Also starts the Player task that get the current state
-        //  of the game from the server
 
         try {
 
@@ -34,8 +33,9 @@ class ClientTCP extends Client {
             TCPNetObjectReader nor = new TCPNetObjectReader(socket);
             TCPNetObjectWriter now = new TCPNetObjectWriter(socket);
 
-            // Receive the player id
-            int playerId = (int) nor.get();
+            // Receive player id and port
+            Serializable[] data = (Serializable[]) nor.get();
+            int playerId = (int) data[0];
 
             // Setup the server, just send an empty array
             now.put(new Serializable[0]);
@@ -53,4 +53,5 @@ class ClientTCP extends Client {
         }
 
     }
+
 }

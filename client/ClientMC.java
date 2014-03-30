@@ -5,6 +5,10 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.Socket;
 
+/**
+ * ClientMC sets up/joins a game on the server. Moves are sent over TCP and all
+ * updates are received via multicast UDP.
+ */
 class ClientMC extends Client {
 
     /**
@@ -38,9 +42,12 @@ class ClientMC extends Client {
             int playerId = (int) data[0];
             int port     = (int) data[1];
 
+            System.out.println("Received playedId: " + playerId);
+            System.out.println("Received port: " + port);
+
             // Tell the server this is a multicast game
             now.put(new Serializable[]{
-                    "mc"
+                "mc"
             });
 
             NetObjectReader bnor = new NetMCReader(port, Global.MC_ADDRESS);

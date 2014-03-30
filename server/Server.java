@@ -27,7 +27,10 @@ class Server {
      */
     private int gamesNo = 0;
 
-    private int port = 50002;
+    /**
+     * The broadcast port, used when updates are sent via multicast
+     */
+    private int broadcastPort = 50002;
 
     public static void main(String args[]) {
         (new Server()).start();
@@ -61,14 +64,17 @@ class Server {
 
                 S_PongModel model = new S_PongModel();
 
+                // Setup left player
                 Player playerLeft = clientHandshake(model, ss, Global.LEFT_PLAYER);
 
                 es.execute(playerLeft);
 
+                // Setup right player
                 Player playerRight = clientHandshake(model, ss, Global.RIGHT_PLAYER);
 
                 es.execute(playerRight);
 
+                // Setup view
                 S_PongView view = new S_PongView(
                         playerLeft.getWriter(),
                         playerRight.getWriter()
@@ -80,7 +86,9 @@ class Server {
 
                 model.makeActiveObject(); // Start play
 
-                System.out.println("Game no " + gamesNo++ + " created on port " + port++);
+                System.out.println("Game no " + gamesNo++ + " created on port " + Global.port);
+
+                broadcastPort++;
 
             }
 
@@ -114,7 +122,7 @@ class Server {
         // Send the player id and gameNo back
         now.put(new Serializable[] {
                 playerId,
-                port
+                broadcastPort
         });
 
         // Wait for setup info
@@ -130,7 +138,8 @@ class Server {
                     // Can't have delay compensation and multicast
                     Global.delay_compensation = false;
 
-                    now = new NetMCWriter(port, Global.MC_ADDRESS);
+                    now = new NetMCWriter(broadcastPort, Global.MC_ADDRESS);
+                    System.out.println("Broadcasting on port " + Global.MC_ADDRESS + ":" + broadcastPort);
 
                 }
 
@@ -151,11 +160,24 @@ class Server {
  */
 class Player implements Runnable {
 
-    final int playerId;
+    /**
+     * The players ID
+     */
+    private final int playerId;
 
+    /**
+     * A reference to the pong model
+     */
     private S_PongModel pongModel;
 
+    /**
+     * Used to receive communication from the server
+     */
     private NetObjectReader nor;
+
+    /**
+     * Used to send communications to the server
+     */
     private NetObjectWriter now;
 
     /**
@@ -174,12 +196,26 @@ class Player implements Runnable {
 
     }
 
+    /**
+     * Gets the players reader
+     *
+     * @return the players reader
+     */
     public NetObjectReader getReader() {
+
         return this.nor;
+
     }
 
+    /**
+     * Gets the players writer
+     *
+     * @return the players writer
+     */
     public NetObjectWriter getWriter() {
+
         return this.now;
+
     }
 
     /**
@@ -189,6 +225,7 @@ class Player implements Runnable {
 
         while (true) {
 
+            // Wait for a message from the player
             Object o = nor.get();
 
             if ( o == null ) break;
@@ -197,16 +234,24 @@ class Player implements Runnable {
 
             String[] messages = message.split(":");
 
-            int keypress       = Integer.parseInt(messages[0], 10);
-            long timestamp     = Long.parseLong(messages[1], 10);
-            long avgPing       = Long.parseLong(messages[2], 10);
+            // Which key they pressed
+            int keypress  = Integer.parseInt(messages[0], 10);
+
+            // A timestamp when they sent the request, this will be sent back
+            // on the next tick so the client can calculate round trip time
+            long timestamp = Long.parseLong(messages[1], 10);
+
+            // The average ping of the player
+            long averagePing  = Long.parseLong(messages[2], 10);
+
+            // The round trip time of the last request
             long roundTripTime = Long.parseLong(messages[3], 10);
 
             System.out.println("Key Press Received from Player " + playerId);
 
             GameObject bat = pongModel.getBats()[playerId];
             pongModel.setLastPingTimestamp(playerId, timestamp);
-            pongModel.setAveragePing(playerId, avgPing);
+            pongModel.setAveragePing(playerId, averagePing);
             pongModel.setLastRequestRTT(playerId, roundTripTime);
 
             // TODO: Fix this, any key than up moves the bat down, Its not wrong though!
@@ -219,4 +264,5 @@ class Player implements Runnable {
         }
 
     }
+
 }
