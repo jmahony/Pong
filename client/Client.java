@@ -9,10 +9,20 @@ import java.net.Socket;
 /**
  * Start the client that will display the game for a player
  */
-class Client {
+abstract class Client {
 
     public static void main(String args[]) {
-        (new Client()).start();
+
+        if (args.length > 0 && args[0] == "1") {
+
+            (new ClientMultiCast()).start();
+
+        } else {
+
+            (new ClientTCP()).start();
+
+        }
+
     }
 
     /**
@@ -39,6 +49,23 @@ class Client {
      * @param model Of the game
      * @param cont  Controller (MVC) of the Game
      */
+    public abstract void makeContactWithServer(C_PongModel model, C_PongController cont);
+
+}
+
+/**
+ * Start the client that will display the game for a player
+ */
+class ClientTCP extends Client {
+
+    /**
+     * Make contact with the Server who controls the game
+     * Players will need to know about the model
+     *
+     * @param model Of the game
+     * @param cont  Controller (MVC) of the Game
+     */
+    @Override
     public void makeContactWithServer(C_PongModel model, C_PongController cont) {
         // Also starts the Player task that get the current state
         //  of the game from the server
@@ -62,4 +89,13 @@ class Client {
         }
 
     }
+}
+
+class ClientMultiCast extends Client {
+
+    @Override
+    public void makeContactWithServer(C_PongModel model, C_PongController cont) {
+
+    }
+
 }
