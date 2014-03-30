@@ -1,6 +1,6 @@
 package common;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
@@ -28,18 +28,38 @@ public class NetMCReader implements NetObjectReader {
     }
 
 
-    public synchronized String get() {
+    public synchronized Object get() {
+
         DEBUG.trace("MCRead: on port [%d]", port);
+
         byte[] buf = new byte[512];
+
         DatagramPacket packet = new DatagramPacket(buf, buf.length);
+
+        ObjectInput in = null;
+
         try {
+
             socket.receive(packet);
+
+            InputStream bos = new ByteArrayInputStream(buf);
+
+            in = new ObjectInputStream(bos);
+
+            return in.readObject();
+
         } catch (IOException e) {
+
             e.printStackTrace();
+
+        } catch (ClassNotFoundException e) {
+
+            e.printStackTrace();
+
         }
 
-        String m = new String(packet.getData(), 0, packet.getLength());
-        DEBUG.trace("MCRead: Read <%s>", m);
-        return m;
+        return null;
+
     }
+
 }

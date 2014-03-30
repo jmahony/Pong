@@ -28,6 +28,11 @@ public class Global {
     public static String host = "localhost";
 
     /**
+     * The IP
+     */
+    public static final String MULTI_CAST_ADDRESS = "224.0.0.7";
+
+    /**
      * The max amount of players on the server
      */
     public static final int MAX_PLAYERS = 4;

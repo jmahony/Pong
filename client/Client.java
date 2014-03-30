@@ -4,6 +4,7 @@ import common.*;
 import org.apache.commons.cli.*;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.Socket;
 
 /**
@@ -107,12 +108,18 @@ class ClientTCP extends Client {
 
             Socket socket = new Socket(Global.host, Global.port);
 
-            NetObjectReader nor = new TCPNetObjectReader(socket);
+            TCPNetObjectReader nor = new TCPNetObjectReader(socket);
             TCPNetObjectWriter now = new TCPNetObjectWriter(socket);
 
-            cont.addTCPWriter(now);
+            // Receive the player id
+            int playerId = (int) nor.get();
 
-            Player player = new Player(model, nor, (int) nor.get());
+            // Setup the server, just send an empty array
+            now.put(new Serializable[0]);
+
+            Player player = new Player(model, nor, playerId);
+
+            cont.addTCPWriter(now);
 
             player.start();
 
@@ -141,16 +148,21 @@ class ClientMultiCast extends Client {
             NetObjectReader nor    = new TCPNetObjectReader(socket);
             TCPNetObjectWriter now = new TCPNetObjectWriter(socket);
 
-            now.put("mc");
+            // Receive the player id
+            int playerId = (int) nor.get();
+
+            // Tell the server this is a multicast game
+            now.put(new Serializable[]{
+                    "mc"
+            });
 
             NetObjectReader bnor = new NetMCReader(Global.port, Global.MULTI_CAST_ADDRESS);
+
+            Player player = new Player(model, bnor, playerId);
 
             // Add the socket to the controller so it can send moves to the
             // server
             cont.addTCPWriter(now);
-
-            // Create a player to listen to game updates
-            Player player = new Player(model, bnor, (int) nor.get());
 
             nor = null;
 

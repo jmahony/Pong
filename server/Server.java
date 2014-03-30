@@ -2,6 +2,7 @@ package server;
 
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -105,18 +106,34 @@ class Server {
 
         System.out.println("Player " + playerNo++ + " has connected");
 
-        TCPNetObjectWriter now = new TCPNetObjectWriter(socketLeft);
+        NetObjectWriter now    = new TCPNetObjectWriter(socketLeft);
         TCPNetObjectReader nor = new TCPNetObjectReader(socketLeft);
 
-        Player player = new Player(playerId, model, nor, now);
-
-        // Send the players ID back to them
+        // Send the players ID back
         now.put(playerId);
 
         // Wait for setup info
-        nor.get();
-        
-        return player;
+        Serializable[] setup = (Serializable[]) nor.get();
+
+        // The first player to join gets to setup the game.
+        if (playerId == 0) {
+
+            if (setup.length > 0) {
+
+                if (setup[0].equals("mc")) {
+
+                    // Can't have delay compensation and multicast
+                    Global.delay_compensation = false;
+
+                    now = new NetMCWriter(Global.port, Global.MULTI_CAST_ADDRESS);
+
+                }
+
+            }
+
+        }
+
+        return new Player(playerId, model, nor, now);
 
     }
 
