@@ -130,7 +130,7 @@ class Server {
                     // Can't have delay compensation and multicast
                     Global.delay_compensation = false;
 
-                    now = new NetMCWriter(port, Global.MULTI_CAST_ADDRESS);
+                    now = new NetMCWriter(port, Global.MC_ADDRESS);
 
                 }
 

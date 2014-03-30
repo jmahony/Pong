@@ -30,7 +30,7 @@ public class Global {
     /**
      * The IP
      */
-    public static final String MULTI_CAST_ADDRESS = "224.0.0.7";
+    public static final String MC_ADDRESS = "224.0.0.7";
 
     /**
      * The max amount of players on the server
