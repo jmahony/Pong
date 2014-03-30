@@ -2,15 +2,14 @@ package common;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.io.BufferedOutputStream;
 import java.net.Socket;
 
 /**
  * Wrapper for reading an object from a socket
  */
 
-public class NetObjectWriter extends ObjectOutputStream {
-    public NetObjectWriter(Socket s) throws IOException {
+public class TCPNetObjectWriter extends ObjectOutputStream implements NetObjectWriter {
+    public TCPNetObjectWriter(Socket s) throws IOException {
         super(s.getOutputStream());
         s.setTcpNoDelay(true);       // Send data immediately
     }
@@ -23,7 +22,7 @@ public class NetObjectWriter extends ObjectOutputStream {
             flush();                   // Flush
             return true;               // Ok
         } catch (IOException err) {
-            DEBUG.error("NetObjectWriter.get %s",
+            DEBUG.error("TCPNetObjectWriter.get %s",
                     err.getMessage());
             return false;                           // Failed write
         }
@@ -44,7 +43,7 @@ public class NetObjectWriter extends ObjectOutputStream {
 
                         Thread.sleep(delay);
 
-                        NetObjectWriter.this.put(data);
+                        TCPNetObjectWriter.this.put(data);
 
                     } catch (InterruptedException e) {
 

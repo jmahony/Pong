@@ -12,7 +12,7 @@ public class C_PongController {
     private C_PongModel model;
     private C_PongView view;
     private Socket socket;
-    private NetObjectWriter now;
+    private TCPNetObjectWriter now;
 
     /**
      * Constructor
@@ -50,7 +50,7 @@ public class C_PongController {
 
             if (now == null) {
 
-                now = new NetObjectWriter(socket);
+                now = new TCPNetObjectWriter(socket);
 
             }
 

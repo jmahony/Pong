@@ -16,7 +16,7 @@ import java.util.List;
 class Player extends Thread {
 
     private C_PongModel pongModel;
-    private Socket socket;
+    private NetObjectReader nor;
     private List<Long> pings;
     private long lastTimestamp;
 
@@ -24,12 +24,12 @@ class Player extends Thread {
      * Constructor
      *
      * @param model - model of the game
-     * @param s     - Socket used to communicate with server
+     * @param nor     - Socket used to communicate with server
      */
-    public Player(C_PongModel model, Socket s) {
+    public Player(C_PongModel model, NetObjectReader nor) {
         // The player needs to know this to be able to work
         pongModel = model;
-        socket = s;
+        this.nor = nor;
         Object ArrayList;
         pings = new ArrayList<Long>();
     }
@@ -44,44 +44,35 @@ class Player extends Thread {
         // Update model with this information, Redisplay model
         DEBUG.trace("Player.run");
 
-        try {
 
-            NetObjectReader nor = new NetObjectReader(socket);
+        while (true) {
 
-            while (true) {
+            Object o = nor.get();
 
-                Object o = nor.get();
+            Serializable[] state = (Serializable[]) o;
 
-                Serializable[] state = (Serializable[]) o;
+            GameObject playerOneBat = (GameObject) state[0];
+            GameObject playerTwoBat = (GameObject) state[1];
+            GameObject ball         = (GameObject) state[2];
+            long timestamp          = (Long) state[3];
+            long ping               = System.currentTimeMillis() - timestamp;
 
-                GameObject playerOneBat = (GameObject) state[0];
-                GameObject playerTwoBat = (GameObject) state[1];
-                GameObject ball         = (GameObject) state[2];
-                long timestamp          = (Long) state[3];
-                long ping               = System.currentTimeMillis() - timestamp;
+            pongModel.setBats(new GameObject[] {playerOneBat, playerTwoBat});
+            pongModel.setBall(ball);
 
-                pongModel.setBats(new GameObject[] {playerOneBat, playerTwoBat});
-                pongModel.setBall(ball);
+            if (lastTimestamp != timestamp) {
 
-                if (lastTimestamp != timestamp) {
+                addPing(ping);
 
-                    addPing(ping);
-
-                    pongModel.setAveragePing(averagePing());
-                    pongModel.setLastRequestRTT(ping);
-
-                }
-
-                pongModel.modelChanged();
-
-
-                lastTimestamp = timestamp;
+                pongModel.setAveragePing(averagePing());
+                pongModel.setLastRequestRTT(ping);
 
             }
 
-        } catch (IOException e) {
+            pongModel.modelChanged();
 
-            e.printStackTrace();
+
+            lastTimestamp = timestamp;
 
         }
 

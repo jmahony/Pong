@@ -84,7 +84,7 @@ class S_PongView implements Observer {
             model.getLastPingTimestamp(Global.RIGHT_PLAYER)
         };
 
-        if (Global.DELAY_COMPENSATION) {
+        if (Global.delay_compensation) {
 
             // Get both players average ping
             // e.g. leftAvgPing = 200

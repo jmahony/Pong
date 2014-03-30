@@ -64,7 +64,7 @@ class Server {
 
                 Runnable playerLeft = new Player(playerNo++ % 2, model, socketLeft);
 
-                NetObjectWriter nowPlayerLeft = new NetObjectWriter(socketLeft);
+                TCPNetObjectWriter nowPlayerLeft = new TCPNetObjectWriter(socketLeft);
 
                 es.execute(playerLeft);
 
@@ -74,7 +74,7 @@ class Server {
 
                 Runnable playerRight = new Player(playerNo++ % 2, model, socketRight);
 
-                NetObjectWriter nowPlayerRight = new NetObjectWriter(socketRight);
+                TCPNetObjectWriter nowPlayerRight = new TCPNetObjectWriter(socketRight);
 
                 es.execute(playerRight);
 
@@ -133,7 +133,7 @@ class Player implements Runnable {
 
         try {
 
-            NetObjectReader nor = new NetObjectReader(socket);
+            NetObjectReader nor = new TCPNetObjectReader(socket);
 
             while (true) {
 

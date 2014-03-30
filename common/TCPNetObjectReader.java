@@ -6,8 +6,8 @@ import java.net.Socket;
 /**
  * Wrapper to allow reading of objects from a socket
  */
-public class NetObjectReader extends ObjectInputStream {
-    public NetObjectReader(Socket s) throws IOException {
+public class TCPNetObjectReader extends ObjectInputStream implements NetObjectReader {
+    public TCPNetObjectReader(Socket s) throws IOException {
         super(s.getInputStream());
     }
 
@@ -19,7 +19,7 @@ public class NetObjectReader extends ObjectInputStream {
             return readObject();                   // Return read object
         } catch (Exception err)                  // Reading error
         {
-            DEBUG.error("NetObjectReader.get %s",
+            DEBUG.error("TCPNetObjectReader.get %s",
                     err.getMessage());
             return null;                           //  On error return null
         }

@@ -42,7 +42,7 @@ public class Global {
     /**
      * Whether or not to enable delay compensation on the server
      */
-    public static final boolean DELAY_COMPENSATION = true;
+    public static boolean delay_compensation = true;
 
 }
 

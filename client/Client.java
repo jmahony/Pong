@@ -3,6 +3,7 @@ package client;
 import common.*;
 import org.apache.commons.cli.*;
 
+import java.io.IOException;
 import java.net.Socket;
 
 /**
@@ -13,23 +14,36 @@ abstract class Client {
     public static void main(String args[]) throws ParseException {
 
         Options options = new Options() {{
-            addOption("m", false,  "Whether to multicast the game");
-            addOption("p", false, "Set the port");
-            addOption("h", true,  "The hostname of the server");
+            addOption("m",   false, "Whether to multicast the game");
+            addOption("p",   false, "Set the port");
+            addOption("h",   true,  "The hostname of the server");
+            addOption("ddc", false, "disable delay compensation");
         }};
 
         CommandLineParser parser = new GnuParser();
-        CommandLine cmd = parser.parse( options, args);
+        CommandLine cmd = parser.parse(options, args);
 
+        // If the port option is supplied, set the port
         if (cmd.hasOption("p")) {
             Global.port = Integer.parseInt(cmd.getOptionValue("p"), 10);
         }
 
+        // If the host option is set, set the host
         if (cmd.hasOption("h")) {
             Global.host = cmd.getOptionValue("h");
         }
 
+        // If disable delay compensation is set, disable dc
+        if (cmd.hasOption("ddc")) {
+            Global.delay_compensation = false;
+        }
+
+        // If multicast is set, create a multicast client
+        // else create a TCP client
         if (cmd.hasOption("m")) {
+
+            // Can't do multicast and delay compensation
+            Global.delay_compensation = false;
 
             (new ClientMultiCast()).start();
 
@@ -93,9 +107,11 @@ class ClientTCP extends Client {
 
             Socket socket = new Socket(Global.host, Global.port);
 
+            NetObjectReader now = new TCPNetObjectReader(socket);
+
             cont.addSocket(socket);
 
-            Player player = new Player(model, socket);
+            Player player = new Player(model, now);
 
             player.start();
 
@@ -112,6 +128,32 @@ class ClientMultiCast extends Client {
 
     @Override
     public void makeContactWithServer(C_PongModel model, C_PongController cont) {
+
+        System.out.println("Attempting to make contact with: " +
+                Global.host + ":" + Global.port);
+
+        try {
+
+            // Create a new socket to communicate through
+            Socket socket = new Socket(Global.host, Global.port);
+
+            NetObjectReader now = new TCPNetObjectReader(socket);
+
+            // Add the socket to the controller so it can send moves to the
+            // server
+            cont.addSocket(socket);
+
+            // Create a player to listen to game updates
+            Player player = new Player(model, now);
+
+            player.start();
+
+        } catch (IOException e) {
+
+            System.out.println("Could not connect to server");
+            e.printStackTrace();
+
+        }
 
     }
 
