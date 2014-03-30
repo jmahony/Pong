@@ -1,8 +1,7 @@
 package client;
 
 import common.*;
-
-import static common.Global.*;
+import org.apache.commons.cli.*;
 
 import java.net.Socket;
 
@@ -11,9 +10,26 @@ import java.net.Socket;
  */
 abstract class Client {
 
-    public static void main(String args[]) {
+    public static void main(String args[]) throws ParseException {
 
-        if (args.length > 0 && args[0] == "1") {
+        Options options = new Options() {{
+            addOption("m", false,  "Whether to multicast the game");
+            addOption("p", false, "Set the port");
+            addOption("h", true,  "The hostname of the server");
+        }};
+
+        CommandLineParser parser = new GnuParser();
+        CommandLine cmd = parser.parse( options, args);
+
+        if (cmd.hasOption("p")) {
+            Global.port = Integer.parseInt(cmd.getOptionValue("p"), 10);
+        }
+
+        if (cmd.hasOption("h")) {
+            Global.host = cmd.getOptionValue("h");
+        }
+
+        if (cmd.hasOption("m")) {
 
             (new ClientMultiCast()).start();
 
@@ -70,11 +86,12 @@ class ClientTCP extends Client {
         // Also starts the Player task that get the current state
         //  of the game from the server
 
-        System.out.println("Client");
-
         try {
 
-            Socket socket = new Socket(Global.HOST, Global.PORT);
+            System.out.println("Attempting to make contact with: " +
+            Global.host + ":" + Global.port);
+
+            Socket socket = new Socket(Global.host, Global.port);
 
             cont.addSocket(socket);
 

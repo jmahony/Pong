@@ -52,7 +52,7 @@ class Server {
 
             ExecutorService es = Executors.newFixedThreadPool(Global.MAX_PLAYERS);
 
-            ServerSocket ss = new ServerSocket(Global.PORT);
+            ServerSocket ss = new ServerSocket(Global.port);
 
             while (true) {
 

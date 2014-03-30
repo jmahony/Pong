@@ -20,12 +20,12 @@ public class Global {
      * Which port the should be used, this should be passed in as a parameter to
      * both client and server
      */
-    public static final int PORT = 50001;       // Port
+    public static int port = 50001;       // Port
 
     /**
      * The servers IP
      */
-    public static final String HOST = "localhost";
+    public static String host = "localhost";
 
     /**
      * The max amount of players on the server
