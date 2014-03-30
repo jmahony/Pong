@@ -98,6 +98,7 @@ class Server {
     }
 }
 
+// TODO: Move player into its own file
 /**
  * Individual player run as a separate thread to allow
  * updates to the model when a player moves there bat
