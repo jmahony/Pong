@@ -110,6 +110,7 @@ class S_PongView implements Observer {
                  rightActualDelay =
                     rightDelay + model.getLastUpdateDelay(Global.RIGHT_PLAYER);
 
+            //TODO: Remove debugging
             String leftActualDelayString = String.format("(%d - %d) + %d = %d", rightAvgPing, leftAvgPing, model.getLastUpdateDelay(Global.LEFT_PLAYER), leftActualDelay);
             String rightActualDelayString = String.format("(%d - %d) + %d = %d", leftAvgPing, rightAvgPing, model.getLastUpdateDelay(Global.RIGHT_PLAYER), rightActualDelay);
             System.out.println("--------------------------- TICK ---------------------------");
