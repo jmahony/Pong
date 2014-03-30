@@ -55,27 +55,31 @@ class Player extends Thread {
             GameObject playerTwoBat = (GameObject) state[1];
             GameObject ball         = (GameObject) state[2];
 
-            // Timestamp is sent in the form leftTimestamp:rightTimestamp
-            long timestamp          =  Long.parseLong(state[3].toString().
-                                                      split(":")[playerId], 10);
+            if (playerId != -1) {
 
-            long ping               = System.currentTimeMillis() - timestamp;
+                // Timestamp is sent in the form leftTimestamp:rightTimestamp
+                long timestamp          =  Long.parseLong(state[3].toString().
+                        split(":")[playerId], 10);
+
+                long ping               = System.currentTimeMillis() - timestamp;
+
+                if (lastTimestamp != timestamp) {
+
+                    addPing(ping);
+
+                    pongModel.setAveragePing(averagePing());
+                    pongModel.setLastRequestRTT(ping);
+
+                }
+
+                lastTimestamp = timestamp;
+
+            }
 
             pongModel.setBats(new GameObject[] {playerOneBat, playerTwoBat});
             pongModel.setBall(ball);
 
-            if (lastTimestamp != timestamp) {
-
-                addPing(ping);
-
-                pongModel.setAveragePing(averagePing());
-                pongModel.setLastRequestRTT(ping);
-
-            }
-
             pongModel.modelChanged();
-
-            lastTimestamp = timestamp;
 
         }
 

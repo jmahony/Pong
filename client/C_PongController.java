@@ -9,6 +9,7 @@ import java.net.Socket;
  * Pong controller, handles user interactions
  */
 public class C_PongController {
+    private boolean spectator = false;
     private C_PongModel model;
     private C_PongView view;
     private TCPNetObjectWriter now;
@@ -24,6 +25,20 @@ public class C_PongController {
         view = aPongView;
         view.setPongController(this);  // View talks to controller
     }
+
+    /**
+     * Constructor
+     *
+     * @param aPongModel Model of game on client
+     * @param aPongView  View of game on client
+     */
+    public C_PongController(C_PongModel aPongModel, C_PongView aPongView, boolean spectator) {
+        model = aPongModel;
+        view = aPongView;
+        this.spectator = spectator;
+        view.setPongController(this);  // View talks to controller
+    }
+
 
     /**
      * Add the socket to the controller so we can send moves
@@ -48,10 +63,14 @@ public class C_PongController {
 
         DEBUG.trace("Key Pressed");
 
-        now.put(keyCode + ":" +
-                System.currentTimeMillis() + ":" +
-                model.getAveragePing() + ":" +
-                model.getLastRequestRTT());
+        if (!spectator) {
+
+            now.put(keyCode + ":" +
+                    System.currentTimeMillis() + ":" +
+                    model.getAveragePing() + ":" +
+                    model.getLastRequestRTT());
+
+        }
 
     }
 

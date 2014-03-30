@@ -27,6 +27,8 @@ class Server {
      */
     private int gamesNo = 0;
 
+    private int port = 50002;
+
     public static void main(String args[]) {
         (new Server()).start();
     }
@@ -78,7 +80,7 @@ class Server {
 
                 model.makeActiveObject(); // Start play
 
-                System.out.println("Game no " + gamesNo++ + " created");
+                System.out.println("Game no " + gamesNo++ + " created on port " + port++);
 
             }
 
@@ -109,8 +111,11 @@ class Server {
         NetObjectWriter now    = new TCPNetObjectWriter(socketLeft);
         TCPNetObjectReader nor = new TCPNetObjectReader(socketLeft);
 
-        // Send the players ID back
-        now.put(playerId);
+        // Send the player id and gameNo back
+        now.put(new Serializable[] {
+                playerId,
+                port
+        });
 
         // Wait for setup info
         Serializable[] setup = (Serializable[]) nor.get();
@@ -125,7 +130,7 @@ class Server {
                     // Can't have delay compensation and multicast
                     Global.delay_compensation = false;
 
-                    now = new NetMCWriter(Global.port, Global.MULTI_CAST_ADDRESS);
+                    now = new NetMCWriter(port, Global.MULTI_CAST_ADDRESS);
 
                 }
 

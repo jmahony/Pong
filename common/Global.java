@@ -41,7 +41,8 @@ public class Global {
      * Helper constants for the player ids, so we are always calling the players
      * either left or right rather than 0 or 1.
      */
-    public static final int LEFT_PLAYER = 0;
+    public static final int SPECTATOR    = -1;
+    public static final int LEFT_PLAYER  = 0;
     public static final int RIGHT_PLAYER = 1;
 
     /**
