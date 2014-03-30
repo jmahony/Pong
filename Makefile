@@ -1,15 +1,16 @@
 # For Unix and cygwin environment
-DEPRECATED=-Xlint:deprecation 
+DEPRECATED=-Xlint:deprecation
 DEPRECATED=
 FLAGS=
 FLAGS= -source 1.7 -Xlint:unchecked
 FLAGS= -source 1.7
+FLAGS= -classpath libs/commons-cli-1.2/commons-cli-1.2.jar
 
-compile:	
+compile:
 	javac $(DEPRECATED) $(FLAGS)       \
                             client/*.java  \
                             server/*.java  \
-                            common/*.java     
+                            common/*.java
 
 clean:
 	rm -f */*.class */*.bak *.bak *.tgz
@@ -32,7 +33,7 @@ tgz:
 	tar cvfz pong.tgz client/*.java server/*.java common/*.java Makefile
 
 run:
-	java server/Server &
+	java -cp "libs/commons-cli-1.2/commons-cli-1.2.jar:." server/Server &
 	sleep 1
-	java client/Client &
-	java client/Client &
+	java -cp "libs/commons-cli-1.2/commons-cli-1.2.jar:." client/Client &
+	java -cp "libs/commons-cli-1.2/commons-cli-1.2.jar:." client/Client &
