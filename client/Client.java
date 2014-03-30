@@ -111,7 +111,7 @@ class ClientTCP extends Client {
 
             cont.addSocket(socket);
 
-            Player player = new Player(model, now);
+            Player player = new Player(model, now, (int) now.get());
 
             player.start();
 
@@ -144,7 +144,7 @@ class ClientMultiCast extends Client {
             cont.addSocket(socket);
 
             // Create a player to listen to game updates
-            Player player = new Player(model, now);
+            Player player = new Player(model, now, (int) now.get());
 
             player.start();
 

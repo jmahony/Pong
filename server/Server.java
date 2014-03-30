@@ -66,6 +66,8 @@ class Server {
 
                 TCPNetObjectWriter nowPlayerLeft = new TCPNetObjectWriter(socketLeft);
 
+                nowPlayerLeft.put(Global.LEFT_PLAYER);
+
                 es.execute(playerLeft);
 
                 Socket socketRight = ss.accept();
@@ -75,6 +77,8 @@ class Server {
                 Runnable playerRight = new Player(playerNo++ % 2, model, socketRight);
 
                 TCPNetObjectWriter nowPlayerRight = new TCPNetObjectWriter(socketRight);
+                
+                nowPlayerRight.put(Global.RIGHT_PLAYER);
 
                 es.execute(playerRight);
 

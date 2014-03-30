@@ -63,24 +63,15 @@ class S_PongView implements Observer {
 
         S_PongModel model = (S_PongModel) aPongModel;
 
-        Serializable[] leftState, rightState;
-
         ball = model.getBall();
         bats = model.getBats();
 
         // The state the send to the left player
-        leftState = new Serializable[] {
+        Serializable[] state = new Serializable[] {
             bats[0],
             bats[1],
             ball,
-            model.getLastPingTimestamp(Global.LEFT_PLAYER)
-        };
-
-        // The state to send to the right player
-        rightState = new Serializable[] {
-            bats[0],
-            bats[1],
-            ball,
+            model.getLastPingTimestamp(Global.LEFT_PLAYER) + ":" +
             model.getLastPingTimestamp(Global.RIGHT_PLAYER)
         };
 
@@ -136,8 +127,8 @@ class S_PongView implements Observer {
             System.out.println("Calculation of rightActualDelay: " + rightActualDelayString);
 
             // Send the update to both players with their corresponding delay
-            left.put(leftState, leftActualDelay);
-            right.put(rightState, rightActualDelay);
+            left.put(state, leftActualDelay);
+            right.put(state, rightActualDelay);
 
             // Store how much we've delayed each player so we
             // can offset it against their delay on the next tick
@@ -146,8 +137,8 @@ class S_PongView implements Observer {
 
         } else {
 
-            left.put(leftState);
-            right.put(rightState);
+            left.put(state);
+            right.put(state);
 
         }
 

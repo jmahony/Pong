@@ -19,6 +19,7 @@ class Player extends Thread {
     private NetObjectReader nor;
     private List<Long> pings;
     private long lastTimestamp;
+    private int playerId;
 
     /**
      * Constructor
@@ -26,11 +27,11 @@ class Player extends Thread {
      * @param model - model of the game
      * @param nor     - Socket used to communicate with server
      */
-    public Player(C_PongModel model, NetObjectReader nor) {
+    public Player(C_PongModel model, NetObjectReader nor, int playerId) {
         // The player needs to know this to be able to work
         pongModel = model;
         this.nor = nor;
-        Object ArrayList;
+        this.playerId = playerId;
         pings = new ArrayList<Long>();
     }
 
@@ -44,7 +45,6 @@ class Player extends Thread {
         // Update model with this information, Redisplay model
         DEBUG.trace("Player.run");
 
-
         while (true) {
 
             Object o = nor.get();
@@ -54,7 +54,11 @@ class Player extends Thread {
             GameObject playerOneBat = (GameObject) state[0];
             GameObject playerTwoBat = (GameObject) state[1];
             GameObject ball         = (GameObject) state[2];
-            long timestamp          = (Long) state[3];
+
+            // Timestamp is sent in the form leftTimestamp:rightTimestamp
+            long timestamp          =  Long.parseLong(state[3].toString().
+                                                      split(":")[playerId], 10);
+
             long ping               = System.currentTimeMillis() - timestamp;
 
             pongModel.setBats(new GameObject[] {playerOneBat, playerTwoBat});
@@ -70,7 +74,6 @@ class Player extends Thread {
             }
 
             pongModel.modelChanged();
-
 
             lastTimestamp = timestamp;
 
