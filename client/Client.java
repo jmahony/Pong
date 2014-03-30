@@ -107,11 +107,12 @@ class ClientTCP extends Client {
 
             Socket socket = new Socket(Global.host, Global.port);
 
-            NetObjectReader now = new TCPNetObjectReader(socket);
+            NetObjectReader nor = new TCPNetObjectReader(socket);
+            TCPNetObjectWriter now = new TCPNetObjectWriter(socket);
 
-            cont.addSocket(socket);
+            cont.addTCPWriter(now);
 
-            Player player = new Player(model, now, (int) now.get());
+            Player player = new Player(model, nor, (int) nor.get());
 
             player.start();
 
@@ -137,14 +138,21 @@ class ClientMultiCast extends Client {
             // Create a new socket to communicate through
             Socket socket = new Socket(Global.host, Global.port);
 
-            NetObjectReader now = new TCPNetObjectReader(socket);
+            NetObjectReader nor    = new TCPNetObjectReader(socket);
+            TCPNetObjectWriter now = new TCPNetObjectWriter(socket);
+
+            now.put("mc");
+
+            NetObjectReader bnor = new NetMCReader(Global.port, Global.MULTI_CAST_ADDRESS);
 
             // Add the socket to the controller so it can send moves to the
             // server
-            cont.addSocket(socket);
+            cont.addTCPWriter(now);
 
             // Create a player to listen to game updates
-            Player player = new Player(model, now, (int) now.get());
+            Player player = new Player(model, bnor, (int) nor.get());
+
+            nor = null;
 
             player.start();
 

@@ -11,7 +11,6 @@ import java.net.Socket;
 public class C_PongController {
     private C_PongModel model;
     private C_PongView view;
-    private Socket socket;
     private TCPNetObjectWriter now;
 
     /**
@@ -29,11 +28,11 @@ public class C_PongController {
     /**
      * Add the socket to the controller so we can send moves
      *
-     * @param s The players socket
+     * @param now The players socket
      */
-    public void addSocket(Socket s) {
+    public void addTCPWriter(TCPNetObjectWriter now) {
 
-        socket = s;
+        this.now = now;
 
     }
 
@@ -46,26 +45,13 @@ public class C_PongController {
         // Key typed includes specials, -ve
         // Char is ASCII value
 
-        try {
 
-            if (now == null) {
+        DEBUG.trace("Key Pressed");
 
-                now = new TCPNetObjectWriter(socket);
-
-            }
-
-            DEBUG.trace("Key Pressed");
-
-            now.put(keyCode + ":" +
-                    System.currentTimeMillis() + ":" +
-                    model.getAveragePing() + ":" +
-                    model.getLastRequestRTT());
-
-        } catch (IOException e) {
-
-            e.printStackTrace();
-
-        }
+        now.put(keyCode + ":" +
+                System.currentTimeMillis() + ":" +
+                model.getAveragePing() + ":" +
+                model.getLastRequestRTT());
 
     }
 
