@@ -58,31 +58,18 @@ class Server {
 
                 S_PongModel model = new S_PongModel();
 
-                Socket socketLeft = ss.accept();
-
-                System.out.println("Player " + playerNo + " has connected");
-
-                Runnable playerLeft = new Player(playerNo++ % 2, model, socketLeft);
-
-                TCPNetObjectWriter nowPlayerLeft = new TCPNetObjectWriter(socketLeft);
-
-                nowPlayerLeft.put(Global.LEFT_PLAYER);
+                Player playerLeft = clientHandshake(model, ss, Global.LEFT_PLAYER);
 
                 es.execute(playerLeft);
 
-                Socket socketRight = ss.accept();
-
-                System.out.println("Player " + playerNo + " has connected");
-
-                Runnable playerRight = new Player(playerNo++ % 2, model, socketRight);
-
-                TCPNetObjectWriter nowPlayerRight = new TCPNetObjectWriter(socketRight);
-                
-                nowPlayerRight.put(Global.RIGHT_PLAYER);
+                Player playerRight = clientHandshake(model, ss, Global.RIGHT_PLAYER);
 
                 es.execute(playerRight);
 
-                S_PongView view = new S_PongView(nowPlayerLeft, nowPlayerRight);
+                S_PongView view = new S_PongView(
+                        playerLeft.getWriter(),
+                        playerRight.getWriter()
+                );
 
                 new S_PongController(model, view);
 
@@ -99,7 +86,40 @@ class Server {
             e.printStackTrace();
 
         }
+
     }
+
+    /**
+     * Handshakes with the client, sending / receiving any setup info
+     *
+     * @param model the pong model
+     * @param ss the servers socket
+     * @param playerId the players id
+     * @return the Runnable player
+     * @throws IOException
+     */
+    private synchronized Player clientHandshake(S_PongModel model,
+                            ServerSocket ss, int playerId) throws IOException {
+
+        Socket socketLeft = ss.accept();
+
+        System.out.println("Player " + playerNo++ + " has connected");
+
+        TCPNetObjectWriter now = new TCPNetObjectWriter(socketLeft);
+        TCPNetObjectReader nor = new TCPNetObjectReader(socketLeft);
+
+        Player player = new Player(playerId, model, nor, now);
+
+        // Send the players ID back to them
+        now.put(playerId);
+
+        // Wait for setup info
+        nor.get();
+        
+        return player;
+
+    }
+
 }
 
 // TODO: Move player into its own file
@@ -113,21 +133,31 @@ class Player implements Runnable {
 
     private S_PongModel pongModel;
 
-    private Socket socket;
+    private NetObjectReader nor;
+    private NetObjectWriter now;
 
     /**
      * Constructor
      *
      * @param player Player 0 or 1
      * @param model  Model of the game
-     * @param s      Socket used to communicate the players bat move
+     * @param nor    NetObjectReader to receive moves
      */
-    public Player(int player, S_PongModel model, Socket s) {
+    public Player(int player, S_PongModel model, NetObjectReader nor, NetObjectWriter now) {
 
         playerId = player;
         pongModel = model;
-        socket = s;
+        this.nor = nor;
+        this.now = now;
 
+    }
+
+    public NetObjectReader getReader() {
+        return this.nor;
+    }
+
+    public NetObjectWriter getWriter() {
+        return this.now;
     }
 
     /**
@@ -135,45 +165,34 @@ class Player implements Runnable {
      */
     public void run() {
 
-        try {
+        while (true) {
 
-            NetObjectReader nor = new TCPNetObjectReader(socket);
+            Object o = nor.get();
 
-            while (true) {
+            if ( o == null ) break;
 
-                Object o = nor.get();
+            String message = (String) o;
 
-                if ( o == null ) break;
+            String[] messages = message.split(":");
 
-                String message = (String) o;
+            int keypress       = Integer.parseInt(messages[0], 10);
+            long timestamp     = Long.parseLong(messages[1], 10);
+            long avgPing       = Long.parseLong(messages[2], 10);
+            long roundTripTime = Long.parseLong(messages[3], 10);
 
-                String[] messages = message.split(":");
+            System.out.println("Key Press Received from Player " + playerId);
 
-                int keypress       = Integer.parseInt(messages[0], 10);
-                long timestamp     = Long.parseLong(messages[1], 10);
-                long avgPing       = Long.parseLong(messages[2], 10);
-                long roundTripTime = Long.parseLong(messages[3], 10);
+            GameObject bat = pongModel.getBats()[playerId];
+            pongModel.setLastPingTimestamp(playerId, timestamp);
+            pongModel.setAveragePing(playerId, avgPing);
+            pongModel.setLastRequestRTT(playerId, roundTripTime);
 
-                System.out.println("Key Press Received from Player " + playerId);
+            // TODO: Fix this, any key than up moves the bat down, Its not wrong though!
+            bat.moveY(-KeyEvent.VK_UP == keypress ? -Global.BAT_MOVE : Global.BAT_MOVE);
 
-                GameObject bat = pongModel.getBats()[playerId];
-                pongModel.setLastPingTimestamp(playerId, timestamp);
-                pongModel.setAveragePing(playerId, avgPing);
-                pongModel.setLastRequestRTT(playerId, roundTripTime);
+            pongModel.setBat(playerId, bat);
 
-                // TODO: Fix this, any key than up moves the bat down, Its not wrong though!
-                bat.moveY(-KeyEvent.VK_UP == keypress ? -Global.BAT_MOVE : Global.BAT_MOVE);
-
-                pongModel.setBat(playerId, bat);
-
-                pongModel.modelChanged();
-
-            }
-
-
-        } catch (IOException e) {
-
-            e.printStackTrace();
+            pongModel.modelChanged();
 
         }
 
