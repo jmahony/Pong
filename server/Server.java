@@ -40,9 +40,14 @@ class Server {
      * Start the server
      */
     public void start() {
+
+        //TODO: Accept arguments for hostname and port
         DEBUG.set(false);
         DEBUG.trace("Pong Server");
         //DEBUG.set(false);
+
+        System.out.println("Starting Server");
+        System.out.println("Listening on port " + Global.port);
 
         makeContactWithClients();
 
