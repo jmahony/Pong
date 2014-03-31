@@ -10,36 +10,15 @@ abstract class Client {
 
     public static void main(String args[]) throws ParseException {
 
-        Options options = new Options() {{
-            addOption("m",   false, "Whether to multicast the game");
-            addOption("p",   false, "Set the server port");
-            addOption(OptionBuilder.
-                withArgName("port").
-                hasArg().
-                withDescription("If you want to spectate").
-                create("p"));
-
-            addOption(OptionBuilder.
-                withArgName("port").
-                hasArg().
-                withDescription("If you want to spectate").
-                create("s"));
-
-            addOption(OptionBuilder.
-                withArgName("host").
-                hasArg().
-                withDescription("The hostname of the server").
-                create("host"));
-
-            addOption("ddc", false, "Disable delay compensation");
-        }};
-
+        // Setup and parse options
         CommandLineParser parser = new GnuParser();
-        CommandLine cmd = parser.parse(options, args);
+        CommandLine cmd = parser.parse(getOptions(), args);
 
         // If the port option is supplied, set the port
         if (cmd.hasOption("p")) {
+
             Global.port = Integer.parseInt(cmd.getOptionValue("p"), 10);
+
         }
 
         // If the host option is set, set the host
@@ -50,6 +29,7 @@ abstract class Client {
         // If disable delay compensation is set, disable dc
         if (cmd.hasOption("ddc")) {
             Global.delay_compensation = false;
+            System.out.println("Disabling delay compensation");
         }
 
         // If multicast is set, create a multicast client
@@ -57,17 +37,18 @@ abstract class Client {
         if (cmd.hasOption("m")) {
 
             // Can't do multicast and delay compensation
-            Global.delay_compensation = false;
+            delayCompensation(false);
+
             System.out.println("Starting MC Client");
             (new ClientMC()).start();
 
         // If option s, go into spectate mode and watch on the supplied port
         } else if(cmd.hasOption("s")) {
 
-            String port = cmd.getOptionValue("s");
+            delayCompensation(false);
 
             System.out.println("Starting Spectator Client");
-            (new ClientSpectator(Integer.parseInt(port))).start();
+            (new ClientSpectator(Integer.parseInt(cmd.getOptionValue("s"), 10))).start();
 
         } else {
 
@@ -75,6 +56,52 @@ abstract class Client {
             (new ClientTCP()).start();
 
         }
+
+    }
+
+    /**
+     * Setup command line options
+     *
+     * @return options
+     */
+    @SuppressWarnings("static-access")
+    private static Options getOptions() {
+
+        Options options = new Options() {{
+            addOption("m",   false, "Whether to multicast the game");
+            addOption("p",   false, "Set the server port");
+            addOption(OptionBuilder.
+                    withArgName("port").
+                    hasArg().
+                    withDescription("If you want to spectate").
+                    create("p"));
+
+            addOption(OptionBuilder.
+                    withArgName("port").
+                    hasArg().
+                    withDescription("If you want to spectate").
+                    create("s"));
+
+            addOption(OptionBuilder.
+                    withArgName("host").
+                    hasArg().
+                    withDescription("The hostname of the server").
+                    create("h"));
+
+            addOption("ddc", false, "Disable delay compensation");
+        }};
+
+        return options;
+
+    }
+
+    private static void delayCompensation(boolean status) {
+
+        String message = status ? "enabled" : "disabled";
+
+        System.out.println("Delay compensation: " + message);
+
+        Global.delay_compensation = status;
 
     }
 
