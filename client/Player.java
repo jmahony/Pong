@@ -2,9 +2,7 @@ package client;
 
 import common.*;
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +31,7 @@ class Player extends Thread {
     /**
      * The last timestamp sent to the server
      */
-    private long lastTimestamp;
+    private long lastTimestampReceived;
 
     /**
      * The players id
@@ -78,8 +76,10 @@ class Player extends Thread {
 
             long ping = System.currentTimeMillis() - timestamp;
 
-            // Stop the ping rapidly increasing
-            if (lastTimestamp != timestamp) {
+            // Stop the ping rapidly increasing by keeping track of the last
+            // timestamp received by the server therefore only calculating
+            // a ping the first time a timestamp occurs
+            if (lastTimestampReceived != timestamp) {
 
                 addPing(ping);
 
@@ -88,7 +88,7 @@ class Player extends Thread {
 
             }
 
-            lastTimestamp = timestamp;
+            lastTimestampReceived = timestamp;
 
             refreshModel(state);
 
