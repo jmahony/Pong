@@ -75,11 +75,6 @@ public class Global {
     public static final int RIGHT_PLAYER = 1;
 
     /**
-     * Whether or not to enable delay compensation on the server
-     */
-    public static boolean delay_compensation = true;
-
-    /**
      * Delimiter to split string on
      */
     public static final String DELIMITER = ":";

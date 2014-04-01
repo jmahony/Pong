@@ -75,7 +75,7 @@ class S_PongView implements Observer {
             model.getLastPingTimestamp(Global.RIGHT_PLAYER)
         };
 
-        if (Global.delay_compensation ) {
+        if (model.isDelayCompensation() && !model.isMulticast()) {
 
             // Get both players average ping
             // e.g. leftAvgPing = 200
@@ -102,7 +102,7 @@ class S_PongView implements Observer {
                     rightDelay + model.getLastUpdateDelay(Global.RIGHT_PLAYER);
 
             //TODO: Remove debugging
-            String leftActualDelayString = String.format("(%d - %d) + %d = %d", rightAvgPing, leftAvgPing, model.getLastUpdateDelay(Global.LEFT_PLAYER), leftActualDelay);
+           /** String leftActualDelayString = String.format("(%d - %d) + %d = %d", rightAvgPing, leftAvgPing, model.getLastUpdateDelay(Global.LEFT_PLAYER), leftActualDelay);
             String rightActualDelayString = String.format("(%d - %d) + %d = %d", leftAvgPing, rightAvgPing, model.getLastUpdateDelay(Global.RIGHT_PLAYER), rightActualDelay);
             System.out.println("--------------------------- TICK ---------------------------");
 
@@ -126,6 +126,7 @@ class S_PongView implements Observer {
             System.out.println("lastUpdateDelay: " + model.getLastUpdateDelay(Global.RIGHT_PLAYER));
             System.out.println("Calculation of rightActualDelay: " + rightActualDelayString);
 
+            **/
             // Send the update to both players with their corresponding delay
             left.put(state, leftActualDelay);
             right.put(state, rightActualDelay);
@@ -138,7 +139,16 @@ class S_PongView implements Observer {
         } else {
 
             left.put(state);
-            right.put(state);
+
+            // If the game is multicast, the right player will pick up the left
+            // players update
+            // TODO: Refactor the NetObjectWriter so we can do something like
+            // TODO: clients.update(state) and it will determine the rest
+            if (!model.isMulticast()) {
+
+                right.put(state);
+
+            }
 
         }
 

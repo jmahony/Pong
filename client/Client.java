@@ -23,29 +23,20 @@ abstract class Client {
 
         // If the host option is set, set the host
         if (cmd.hasOption("h")) {
-            Global.host = cmd.getOptionValue("h");
-        }
 
-        // If disable delay compensation is set, disable dc
-        if (cmd.hasOption("ddc")) {
-            Global.delay_compensation = false;
-            System.out.println("Disabling delay compensation");
+            Global.host = cmd.getOptionValue("h");
+
         }
 
         // If multicast is set, create a multicast client
         // else create a TCP client
         if (cmd.hasOption("m")) {
 
-            // Can't do multicast and delay compensation
-            delayCompensation(false);
-
             System.out.println("Starting MC Client");
             (new ClientMC()).start();
 
         // If option s, go into spectate mode and watch on the supplied port
         } else if(cmd.hasOption("s")) {
-
-            delayCompensation(false);
 
             System.out.println("Starting Spectator Client");
             (new ClientSpectator(Integer.parseInt(cmd.getOptionValue("s"), 10))).start();
@@ -92,16 +83,6 @@ abstract class Client {
         }};
 
         return options;
-
-    }
-
-    private static void delayCompensation(boolean status) {
-
-        String message = status ? "enabled" : "disabled";
-
-        System.out.println("Delay compensation: " + message);
-
-        Global.delay_compensation = status;
 
     }
 

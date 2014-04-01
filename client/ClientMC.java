@@ -37,18 +37,19 @@ class ClientMC extends Client {
             NetObjectReader nor    = new TCPNetObjectReader(socket);
             TCPNetObjectWriter now = new TCPNetObjectWriter(socket);
 
+            // Tell the server this is a multicast game
+            now.put(new Serializable[]{
+                    "mc"
+            });
+            System.out.println("Sent setup info");
+
+            System.out.println("Waiting for payload");
             // Receive player id and port
             Serializable[] data = (Serializable[]) nor.get();
             int playerId = (int) data[0];
             int port     = (int) data[1];
 
-            System.out.println("Received playedId: " + playerId);
-            System.out.println("Received port: " + port);
-
-            // Tell the server this is a multicast game
-            now.put(new Serializable[]{
-                "mc"
-            });
+            System.out.println("Payload Received playedId: " + playerId + " port: " + port);
 
             NetObjectReader bnor = new NetMCReader(port, Global.MC_ADDRESS);
 

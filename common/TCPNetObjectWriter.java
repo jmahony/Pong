@@ -78,9 +78,13 @@ public class TCPNetObjectWriter extends ObjectOutputStream implements NetObjectW
 
                     try {
 
+                        System.out.println("Creating message thread delay of " + delay);
+
                         Thread.sleep(delay);
 
                         TCPNetObjectWriter.this.put(data);
+
+                        System.out.println("Terminating message thread delay of " + delay);
 
                     } catch (InterruptedException e) {
 
