@@ -1,10 +1,11 @@
 package client;
 
 import common.*;
-import static common.Global.*;
 
-import java.io.IOException;
-import java.net.Socket;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * Individual player run as a separate thread to allow
@@ -12,19 +13,45 @@ import java.net.Socket;
  */
 class Player extends Thread {
 
-    private C_PongModel pongModel;
-    private Socket socket;
+    /**
+     * The pong model
+     */
+    protected C_PongModel pongModel;
+
+    /**
+     * Used to receive updates from the server
+     */
+    protected NetObjectReader nor;
+
+    /**
+     * A list of round trip times
+     */
+    private List<Long> pings;
+
+    /**
+     * The last timestamp sent to the server
+     */
+    private long lastTimestampReceived;
+
+    /**
+     * The players id
+     */
+    private int playerId;
 
     /**
      * Constructor
      *
      * @param model - model of the game
-     * @param s     - Socket used to communicate with server
+     * @param nor     - Socket used to communicate with server
      */
-    public Player(C_PongModel model, Socket s) {
+    public Player(C_PongModel model, NetObjectReader nor, int playerId) {
+
         // The player needs to know this to be able to work
         pongModel = model;
-        socket = s;
+        this.nor = nor;
+        this.playerId = playerId;
+        pings = new ArrayList<Long>();
+
     }
 
     /**
@@ -37,30 +64,85 @@ class Player extends Thread {
         // Update model with this information, Redisplay model
         DEBUG.trace("Player.run");
 
-        try {
+        while (true) {
 
-            NetObjectReader nor = new NetObjectReader(socket);
+            Object o = nor.get();
 
-            while (true) {
+            Serializable[] state = (Serializable[]) o;
 
-                Object o = nor.get();
+            // Timestamp is sent in the form leftTimestamp:rightTimestamp
+            long timestamp = Long.parseLong(state[3].toString().
+                    split(Global.DELIMITER)[playerId], 10);
 
-                GameObject[] ob = (GameObject[]) o;
+            long ping = System.currentTimeMillis() - timestamp;
 
-                GameObject[] state = (GameObject[]) o;
+            // Stop the ping rapidly increasing by keeping track of the last
+            // timestamp received by the server therefore only calculating
+            // a ping the first time a timestamp occurs
+            if (lastTimestampReceived != timestamp) {
 
-                pongModel.setBats(new GameObject[] {state[0], state[1]});
-                pongModel.setBall(state[2]);
+                addPing(ping);
 
-                pongModel.modelChanged();
+                pongModel.setAveragePing(averagePing());
+                pongModel.setLastRequestRTT(ping);
 
             }
 
-        } catch (IOException e) {
+            lastTimestampReceived = timestamp;
 
-            e.printStackTrace();
+            refreshModel(state);
 
         }
 
     }
+
+    /**
+     * Refresh the common elements of the model (that both spectators and
+     * players share)
+     *
+     * @param state the update sent from the server
+     */
+    protected synchronized void refreshModel(Serializable[] state) {
+
+        GameObject playerOneBat = (GameObject) state[0];
+        GameObject playerTwoBat = (GameObject) state[1];
+        GameObject ball         = (GameObject) state[2];
+
+        pongModel.setBats(new GameObject[] {playerOneBat, playerTwoBat});
+        pongModel.setBall(ball);
+
+        pongModel.modelChanged();
+
+    }
+
+    /**
+     * Add a ping, keeps a store of the last 50 pings so we can average them.
+     *
+     * When a new ping is added, the oldest is removed.
+     *
+     * @param ping
+     */
+    private void addPing(long ping) {
+
+        if (pings.size() >= Global.PING_LIMIT) pings.remove(0);
+
+        pings.add(ping);
+
+    }
+
+    /**
+     * Calculates the average ping of the most recent pings
+     *
+     * @return
+     */
+    private long averagePing() {
+
+        int a = 0;
+
+        for (Long ping : pings) a += ping;
+
+        return a / pings.size();
+
+    }
+
 }

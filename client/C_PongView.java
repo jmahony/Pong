@@ -29,7 +29,11 @@ class C_PongView extends JFrame implements Observer {
     private C_PongController pongController;
     GameObject ball;
     GameObject[] bats;
+    public long ping;
 
+    /**
+     * Constructor
+     */
     public C_PongView() {
         setSize(W, H);                        // Size of window
         addKeyListener(new Transaction());    // Called when key press
@@ -46,6 +50,7 @@ class C_PongView extends JFrame implements Observer {
         C_PongModel model = (C_PongModel) aPongModel;
         ball = model.getBall();
         bats = model.getBats();
+        ping = model.getAveragePing();
         DEBUG.trace("C_PongView.update");
         repaint();                              // Re draw game
     }
@@ -118,10 +123,11 @@ class C_PongView extends JFrame implements Observer {
         g.setPaint(Color.blue);
         FontMetrics fm = getFontMetrics(font);
         String fmt = "Pong - Ball [%3.0f, %3.0f] Bat [%3.0f, %3.0f]" +
-                " Bat [%3.0f, %3.0f]";
+                " Bat [%3.0f, %3.0f] Ping [%03d]";
         String text = String.format(fmt, ball.getX(), ball.getY(),
                 bats[0].getX(), bats[0].getY(),
-                bats[1].getX(), bats[1].getY());
+                bats[1].getX(), bats[1].getY(),
+                ping);
         g.drawString(text, W / 2 - fm.stringWidth(text) / 2, (int) M * 2);
 
         // The ball at the current x, y position (width, height)

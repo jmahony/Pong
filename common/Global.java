@@ -4,20 +4,85 @@ package common;
  * Major constants used in the game
  */
 public class Global {
-    public static final int H = 450;          // Height of window
-    public static final int W = 600;          // Width  of window
 
-    public static final double B = 6;            // Border offset
-    public static final double M = 26;           // Menu offset
-    public static final double BALL_SIZE = 15;  // Ball side
-    public static final double BAT_WIDTH = 10;  // Bat width
-    public static final double BAT_HEIGHT = 100; // Bat Height
+    /**
+     * The height of the window
+     */
+    public static final int H = 450;
 
-    public static final double BAT_MOVE = 5;       // Each move is
+    /**
+     * The width of the window
+     */
+    public static final int W = 600;
 
-    // Of course this should not be a constant
-    //  but should be user settable
-    public static final int PORT = 50001;       // Port
-    public static final String HOST = "localhost"; // M/C Name
+    /**
+     * Border offset
+     */
+    public static final double B = 6;
+
+    /**
+     * Menu offset
+     */
+    public static final double M = 26;
+
+    /**
+     * The size of the ball
+     */
+    public static final double BALL_SIZE = 15;
+
+    /**
+     * The width of the bat
+     */
+    public static final double BAT_WIDTH = 10;
+
+    /**
+     * The height of the bat
+     */
+    public static final double BAT_HEIGHT = 100;
+
+    /**
+     * The amount the bat should move with each keypress
+     */
+    public static final double BAT_MOVE = 5;
+
+    /**
+     * Which port the should be used, this should be passed in as a parameter to
+     * both client and server
+     */
+    public static int port = 50001;       // Port
+
+    /**
+     * The servers IP
+     */
+    public static String host = "localhost";
+
+    /**
+     * The IP
+     */
+    public static final String MC_ADDRESS = "224.0.0.7";
+
+    /**
+     * The max amount of players on the server
+     */
+    public static final int MAX_PLAYERS = 4;
+
+    /**
+     * Helper constants for the player ids, so we are always calling the players
+     * either left or right rather than 0 or 1. -1 is a spectator
+     */
+    public static final int SPECTATOR    = -1;
+    public static final int LEFT_PLAYER  = 0;
+    public static final int RIGHT_PLAYER = 1;
+
+    /**
+     * Delimiter to split string on
+     */
+    public static final String DELIMITER = ":";
+
+    /**
+     * How many pings to keep for the average
+     */
+    public static final int PING_LIMIT = 50;
+
 }
 

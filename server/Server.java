@@ -1,7 +1,11 @@
 package server;
 
+import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import common.*;
 
@@ -11,8 +15,22 @@ import common.*;
  * starts the play of the game
  */
 class Server {
-    private NetObjectWriter p0, p1;
-    final int port = 50000;
+
+    /**
+     * The number of players connected to the server.
+     * This is used to calculate the players number.
+     */
+    private int playerNo = 0;
+
+    /**
+     * The amount of games being played on the server
+     */
+    private int gamesNo = 0;
+
+    /**
+     * The broadcast port, used when updates are sent via multicast
+     */
+    private int broadcastPort = 50002;
 
     public static void main(String args[]) {
         (new Server()).start();
@@ -22,83 +40,186 @@ class Server {
      * Start the server
      */
     public void start() {
+
+        //TODO: Accept arguments for hostname and port
         DEBUG.set(false);
         DEBUG.trace("Pong Server");
         //DEBUG.set(false);
-        S_PongModel model = new S_PongModel();
 
-        makeContactWithClients(model);
+        System.out.println("Starting Server");
+        System.out.println("Listening on port " + Global.port);
 
-        S_PongView view = new S_PongView(p0, p1);
-        new S_PongController(model, view);
+        makeContactWithClients();
 
-        model.addObserver(view); // Add observer to the model
-        model.makeActiveObject(); // Start play
     }
 
     /**
      * Make contact with the clients who wish to play
      * Players will need to know about the model
-     *
-     * @param model Of the game
      */
-    public void makeContactWithClients(S_PongModel model) {
+    public void makeContactWithClients() {
 
         try {
 
-            ServerSocket ss = new ServerSocket(port);
+            ExecutorService es = Executors.newFixedThreadPool(Global.MAX_PLAYERS);
 
-            Socket s0 = ss.accept();
+            ServerSocket ss = new ServerSocket(Global.port);
 
-            p0 = new NetObjectWriter(s0);
+            while (true) {
 
-            Player playerOne = new Player(0, model, s0);
+                S_PongModel model = new S_PongModel();
 
-            playerOne.start();
+                // Setup left player
+                Player playerLeft = clientHandshake(model, ss, Global.LEFT_PLAYER);
 
-            Socket s1 = ss.accept();
+                es.execute(playerLeft);
 
-            p1 = new NetObjectWriter(s1);
+                // Setup right player
+                Player playerRight = clientHandshake(model, ss, Global.RIGHT_PLAYER);
 
-            Player playerTwo = new Player(1, model, s1);
+                es.execute(playerRight);
 
-            playerTwo.start();
+                // Setup view
+                S_PongView view = new S_PongView(
+                        playerLeft.getWriter(),
+                        playerRight.getWriter()
+                );
+
+                new S_PongController(model, view);
+
+                model.addObserver(view); // Add observer to the model
+
+                model.makeActiveObject(); // Start play
+
+                System.out.println("Game no " + gamesNo++ + " created on port " + Global.port);
+
+                broadcastPort++;
+
+            }
 
         } catch (IOException e) {
 
             e.printStackTrace();
 
         }
+
     }
+
+    /**
+     * Handshakes with the client, sending / receiving any setup info
+     *
+     * @param model the pong model
+     * @param ss the servers socket
+     * @param playerId the players id
+     * @return the Runnable player
+     * @throws IOException
+     */
+    private synchronized Player clientHandshake(S_PongModel model,
+                            ServerSocket ss, int playerId) throws IOException {
+
+        Socket socketLeft = ss.accept();
+
+        System.out.println("Player " + playerNo++ + " has connected");
+
+        NetObjectWriter now    = new TCPNetObjectWriter(socketLeft);
+        TCPNetObjectReader nor = new TCPNetObjectReader(socketLeft);
+
+        // Wait for setup info
+        Serializable[] setup = (Serializable[]) nor.get();
+
+        // Send the clients setup info
+        now.put(new Serializable[] {
+            playerId,
+            broadcastPort
+        });
+
+        // The first player to join gets to setup the game.
+        if (playerId == 0) {
+
+            if (setup.length > 0) {
+
+                if (setup[0].equals("mc")) {
+
+                    // Can't have delay compensation and multicast
+                    model.setDelayCompensation(false);
+                    model.setIsMultiCast(true);
+                    now = new NetMCWriter(broadcastPort, Global.MC_ADDRESS);
+                    System.out.println("Broadcasting on port " + Global.MC_ADDRESS + ":" + broadcastPort);
+
+                }
+
+            }
+
+        }
+
+        return new Player(playerId, model, nor, now);
+
+    }
+
 }
 
+// TODO: Move player into its own file
 /**
  * Individual player run as a separate thread to allow
  * updates to the model when a player moves there bat
  */
-class Player extends Thread {
+class Player implements Runnable {
 
-    final int playerId;
+    /**
+     * The players ID
+     */
+    private final int playerId;
 
+    /**
+     * A reference to the pong model
+     */
     private S_PongModel pongModel;
 
-    private Socket socket;
+    /**
+     * Used to receive communication from the server
+     */
+    private NetObjectReader nor;
 
-    private int i = 0;
-
+    /**
+     * Used to send communications to the server
+     */
+    private NetObjectWriter now;
 
     /**
      * Constructor
      *
      * @param player Player 0 or 1
      * @param model  Model of the game
-     * @param s      Socket used to communicate the players bat move
+     * @param nor    NetObjectReader to receive moves
      */
-    public Player(int player, S_PongModel model, Socket s) {
+    public Player(int player, S_PongModel model, NetObjectReader nor, NetObjectWriter now) {
 
         playerId = player;
         pongModel = model;
-        socket = s;
+        this.nor = nor;
+        this.now = now;
+
+    }
+
+    /**
+     * Gets the players reader
+     *
+     * @return the players reader
+     */
+    public NetObjectReader getReader() {
+
+        return this.nor;
+
+    }
+
+    /**
+     * Gets the players writer
+     *
+     * @return the players writer
+     */
+    public NetObjectWriter getWriter() {
+
+        return this.now;
 
     }
 
@@ -107,36 +228,46 @@ class Player extends Thread {
      */
     public void run() {
 
-        try {
+        while (true) {
 
-            NetObjectReader nor = new NetObjectReader(socket);
+            // Wait for a message from the player
+            Object o = nor.get();
 
-            while (true) {
+            if ( o == null ) break;
 
-                Object o = nor.get();
+            String message = (String) o;
 
-                if ( o == null ) break;
+            String[] messages = message.split(":");
 
-                String message = (String) o;
+            // Which key they pressed
+            int keypress  = Integer.parseInt(messages[0], 10);
 
-                System.out.println("Key Press Received from Player " + playerId);
+            // A timestamp when they sent the request, this will be sent back
+            // on the next tick so the client can calculate round trip time
+            long timestamp = Long.parseLong(messages[1], 10);
 
-                GameObject bat = pongModel.getBats()[playerId];
+            // The average ping of the player
+            long averagePing  = Long.parseLong(messages[2], 10);
 
-                bat.moveY(message.equals("u") ? -10 : 10);
+            // The round trip time of the last request
+            long roundTripTime = Long.parseLong(messages[3], 10);
 
-                pongModel.setBat(playerId, bat);
+            System.out.println("Key Press Received from Player " + playerId);
 
-                pongModel.modelChanged();
+            GameObject bat = pongModel.getBats()[playerId];
+            pongModel.setLastPingTimestamp(playerId, timestamp);
+            pongModel.setAveragePing(playerId, averagePing);
+            pongModel.setLastRequestRTT(playerId, roundTripTime);
 
-            }
+            // TODO: Fix this, any key than up moves the bat down, Its not wrong though!
+            bat.moveY(-KeyEvent.VK_UP == keypress ? -Global.BAT_MOVE : Global.BAT_MOVE);
 
+            pongModel.setBat(playerId, bat);
 
-        } catch (IOException e) {
-
-            e.printStackTrace();
+            pongModel.modelChanged();
 
         }
 
     }
+
 }

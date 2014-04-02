@@ -2,20 +2,33 @@ package client;
 
 import common.*;
 
-import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.net.Socket;
-
-import common.GameObject;
 
 /**
  * Pong controller, handles user interactions
  */
 public class C_PongController {
+    /**
+     * Whether or not the client is a spectator. So we know whether to send
+     * moves to the server or not.
+     */
+    private boolean spectator = false;
+
+    /**
+     * The games model
+     */
     private C_PongModel model;
+
+    /**
+     * The games view
+     */
     private C_PongView view;
-    private Socket socket;
-    private NetObjectWriter now;
+
+    /**
+     * Used to send moves to the server
+     */
+    private TCPNetObjectWriter now;
 
     /**
      * Constructor
@@ -24,19 +37,35 @@ public class C_PongController {
      * @param aPongView  View of game on client
      */
     public C_PongController(C_PongModel aPongModel, C_PongView aPongView) {
+
         model = aPongModel;
         view = aPongView;
         view.setPongController(this);  // View talks to controller
+
     }
+
+    /**
+     * Constructor
+     *
+     * @param aPongModel Model of game on client
+     * @param aPongView  View of game on client
+     */
+    public C_PongController(C_PongModel aPongModel, C_PongView aPongView, boolean spectator) {
+        model = aPongModel;
+        view = aPongView;
+        this.spectator = spectator;
+        view.setPongController(this);  // View talks to controller
+    }
+
 
     /**
      * Add the socket to the controller so we can send moves
      *
-     * @param s The players socket
+     * @param now The players socket
      */
-    public void addSocket(Socket s) {
+    public void addTCPWriter(TCPNetObjectWriter now) {
 
-        socket = s;
+        this.now = now;
 
     }
 
@@ -49,36 +78,14 @@ public class C_PongController {
         // Key typed includes specials, -ve
         // Char is ASCII value
 
-        try {
+        DEBUG.trace("Key Pressed");
 
-            if (now == null) {
+        if (!spectator) {
 
-                now = new NetObjectWriter(socket);
-
-            }
-
-            String action = null;
-
-            switch (keyCode) {
-                case -KeyEvent.VK_LEFT:
-                    break;
-                case -KeyEvent.VK_RIGHT:
-                    break;
-                case -KeyEvent.VK_UP:
-                    action = "u";
-                    break;
-                case -KeyEvent.VK_DOWN:
-                    action = "d";
-                    break;
-            }
-
-            DEBUG.trace("Key Pressed");
-
-            now.put(action);
-
-        } catch (IOException e) {
-
-            e.printStackTrace();
+            now.put(keyCode + ":" +
+                    System.currentTimeMillis() + Global.DELIMITER +
+                    model.getAveragePing() + Global.DELIMITER +
+                    model.getLastRequestRTT());
 
         }
 

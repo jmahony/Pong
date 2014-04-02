@@ -17,7 +17,6 @@
 *.dmg
 *.gz
 *.iso
-*.jar
 *.rar
 *.tar
 *.zip
@@ -44,3 +43,8 @@ out/*
 **/main/resources/external/*
 .idea
 html
+/out
+./out/*
+.idea/*
+/.idea
+./.idea/*
