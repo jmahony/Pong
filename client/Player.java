@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  * Individual player run as a separate thread to allow
- * updates immediately the bat is moved
+ * updates the moment the bat is moved
  */
 class Player extends Thread {
 
@@ -24,7 +24,7 @@ class Player extends Thread {
     protected NetObjectReader nor;
 
     /**
-     * A list of round trip times
+     * A list of round trip times (pings)
      */
     private List<Long> pings;
 
@@ -120,7 +120,7 @@ class Player extends Thread {
      *
      * When a new ping is added, the oldest is removed.
      *
-     * @param ping
+     * @param ping the ping to be average
      */
     private void addPing(long ping) {
 
@@ -133,7 +133,7 @@ class Player extends Thread {
     /**
      * Calculates the average ping of the most recent pings
      *
-     * @return
+     * @return the average ping of the client
      */
     private long averagePing() {
 

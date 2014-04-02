@@ -48,7 +48,7 @@ class ClientSpectator extends Client {
 
     /**
      * This doesn't actually make any connections to the server, it simply sets
-     * up a multicast reader to listen or a certain port
+     * up a multicast reader to listen on a certain port
      *
      * @param model Of the game
      * @param cont  Controller (MVC) of the Game

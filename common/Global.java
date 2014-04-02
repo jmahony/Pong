@@ -1,7 +1,7 @@
 package common;
 
 /**
- * Major constants used in the game
+ * Major constants and variables needed in the game.
  */
 public class Global {
 
@@ -41,7 +41,7 @@ public class Global {
     public static final double BAT_HEIGHT = 100;
 
     /**
-     * The amount the bat should move with each keypress
+     * The amount the bat should move with each key press
      */
     public static final double BAT_MOVE = 5;
 
@@ -49,7 +49,7 @@ public class Global {
      * Which port the should be used, this should be passed in as a parameter to
      * both client and server
      */
-    public static int port = 50001;       // Port
+    public static int port = 50001;
 
     /**
      * The servers IP

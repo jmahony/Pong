@@ -14,8 +14,9 @@ class ClientMC extends Client {
     /**
      * Makes contact with the server by creating a socket, a handshake is
      * carried out to exchange information about how the server should setup the
-     * game and the server will provide the players ID and the port to listen to.
-     * Also the reader and writer objects are created to speak with the server.
+     * game in this case a multicast game and the server will provide the
+     * players ID and the port to listen to. Also the reader and writer objects
+     * are created to speak with the server.
      *
      * In this case "mc" is passed to the server to indicate that this will be
      * a multicast game.

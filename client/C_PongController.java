@@ -6,9 +6,10 @@ import java.io.IOException;
 import java.net.Socket;
 
 /**
- * Pong controller, handles user interactions
+ * Pong controller, handles user interactions and sends them to the server
  */
 public class C_PongController {
+
     /**
      * Whether or not the client is a spectator. So we know whether to send
      * moves to the server or not.
@@ -59,7 +60,7 @@ public class C_PongController {
 
 
     /**
-     * Add the socket to the controller so we can send moves
+     * Add the writer to the controller so we can send moves
      *
      * @param now The players socket
      */
@@ -70,7 +71,8 @@ public class C_PongController {
     }
 
     /**
-     * Decide what to do for each key pressed
+     * The the keycode to the server along with the current timestamp,
+     * the average ping and the last request round tripp time.
      *
      * @param keyCode The keycode of the key pressed
      */
@@ -80,9 +82,10 @@ public class C_PongController {
 
         DEBUG.trace("Key Pressed");
 
+        // Ignore the key press its a spectator
         if (!spectator) {
 
-            now.put(keyCode + ":" +
+            now.put(keyCode + Global.DELIMITER +
                     System.currentTimeMillis() + Global.DELIMITER +
                     model.getAveragePing() + Global.DELIMITER +
                     model.getLastRequestRTT());

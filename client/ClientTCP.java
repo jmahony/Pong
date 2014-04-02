@@ -17,6 +17,11 @@ class ClientTCP extends Client {
      * Make contact with the Server who controls the game
      * Players will need to know about the model
      *
+     * This method performs a handshake with the server to receive information
+     * needed by the client, this includes the port to listen on (not actually
+     * used by ClientTCP) and their player ID, this is needed in order for the
+     * timestamp to be extracted from the servers payload
+     *
      * @param model Of the game
      * @param cont  Controller (MVC) of the Game
      */

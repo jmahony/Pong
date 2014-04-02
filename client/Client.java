@@ -4,7 +4,9 @@ import common.*;
 import org.apache.commons.cli.*;
 
 /**
- * Start the client that will display the game for a player
+ * Start the client that will display the game for a player.
+ * This class is abstract and in reality ClientMC, ClientSpectator or ClientTCP
+ * will be instantiated depending on the arguments passed in
  */
 abstract class Client {
 
@@ -29,7 +31,6 @@ abstract class Client {
         }
 
         // If multicast is set, create a multicast client
-        // else create a TCP client
         if (cmd.hasOption("m")) {
 
             System.out.println("Starting MC Client");

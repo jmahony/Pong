@@ -5,7 +5,8 @@ import common.*;
 import java.io.Serializable;
 
 /**
- * Created by josh on 30/03/14.
+ * Similar to the player class but does not extract any information from the
+ * server payload, it just refreshes the model with the state
  */
 public class Spectator extends Player {
 
