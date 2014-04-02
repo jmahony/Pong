@@ -33,12 +33,18 @@ class ClientTCP extends Client {
             TCPNetObjectReader nor = new TCPNetObjectReader(socket);
             TCPNetObjectWriter now = new TCPNetObjectWriter(socket);
 
+            // Setup the server, just send an empty array
+            now.put(new Serializable[0]);
+
+            System.out.println("Sent setup info");
+
+            System.out.println("Waiting for payload");
+
             // Receive player id and port
             Serializable[] data = (Serializable[]) nor.get();
             int playerId = (int) data[0];
 
-            // Setup the server, just send an empty array
-            now.put(new Serializable[0]);
+            System.out.println("Payload Received playedId: " + playerId);
 
             Player player = new Player(model, nor, playerId);
 

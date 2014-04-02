@@ -40,9 +40,14 @@ class Server {
      * Start the server
      */
     public void start() {
+
+        //TODO: Accept arguments for hostname and port
         DEBUG.set(false);
         DEBUG.trace("Pong Server");
         //DEBUG.set(false);
+
+        System.out.println("Starting Server");
+        System.out.println("Listening on port " + Global.port);
 
         makeContactWithClients();
 
@@ -119,14 +124,14 @@ class Server {
         NetObjectWriter now    = new TCPNetObjectWriter(socketLeft);
         TCPNetObjectReader nor = new TCPNetObjectReader(socketLeft);
 
-        // Send the player id and gameNo back
-        now.put(new Serializable[] {
-                playerId,
-                broadcastPort
-        });
-
         // Wait for setup info
         Serializable[] setup = (Serializable[]) nor.get();
+
+        // Send the clients setup info
+        now.put(new Serializable[] {
+            playerId,
+            broadcastPort
+        });
 
         // The first player to join gets to setup the game.
         if (playerId == 0) {
@@ -136,8 +141,8 @@ class Server {
                 if (setup[0].equals("mc")) {
 
                     // Can't have delay compensation and multicast
-                    Global.delay_compensation = false;
-
+                    model.setDelayCompensation(false);
+                    model.setIsMultiCast(true);
                     now = new NetMCWriter(broadcastPort, Global.MC_ADDRESS);
                     System.out.println("Broadcasting on port " + Global.MC_ADDRESS + ":" + broadcastPort);
 

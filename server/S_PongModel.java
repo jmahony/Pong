@@ -50,7 +50,17 @@ public class S_PongModel extends Observable {
      * The delay that was applied to the last update of the players game,
      * this is needed so we can estimate their real ping on the next tick.
      */
-    public long[] lastUpdateDelay = new long[2];
+    private long[] lastUpdateDelay = new long[2];
+
+    /**
+     * Whether game is multicast or not
+     */
+    private boolean multicast = false;
+
+    /**
+     * Whether or not to enable delay compensation on the server
+     */
+    private boolean delayCompensation = true;
 
     /**
      * Constructor
@@ -194,6 +204,42 @@ public class S_PongModel extends Observable {
     public void setLastUpdateDelay(int playerId, long delay) {
         // Make sure we don't store any negative values
         lastUpdateDelay[playerId] = delay >= 0 ? delay : 0;
+    }
+
+    /**
+     * Set whether the same is multicast or not
+     *
+     * @param b  whether to enable or not
+     */
+    public void setIsMultiCast(boolean b) {
+        multicast = b;
+    }
+
+    /**
+     * Whether the game is multicast
+     *
+     * @return whether game is multicast
+     */
+    public boolean isMulticast() {
+        return multicast;
+    }
+
+    /**
+     * Set delay compensation
+     *
+     * @param b whether to enable or not
+     */
+    public void setDelayCompensation(boolean b) {
+        delayCompensation = b;
+    }
+
+    /**
+     * Whether delay compensation is turn on or not
+     *
+     * @return whether delay compensation is turned on
+     */
+    public boolean isDelayCompensation() {
+        return delayCompensation;
     }
 
     /**
