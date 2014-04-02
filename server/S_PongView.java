@@ -93,40 +93,14 @@ class S_PongView implements Observer {
 
             // Calculate the actual delay (including the last delay)
             // e.g. Assuming the left player was delayed by 50ms last tick
-            //     delay = (0 + 50) * 2 = 50 = 100ms delay
-            //     delay = (0 + 0) * 2  = 0 = 0ms delay
+            //     delay = (0 + 50) = 50 = 50ms delay
+            //     delay = (0 + 0)  = 0 = 0ms delay
             //     Anything created than or equal to 0 will treated as 0.
             long leftActualDelay =
                     leftDelay + model.getLastUpdateDelay(Global.LEFT_PLAYER),
                  rightActualDelay =
                     rightDelay + model.getLastUpdateDelay(Global.RIGHT_PLAYER);
 
-            //TODO: Remove debugging
-           /** String leftActualDelayString = String.format("(%d - %d) + %d = %d", rightAvgPing, leftAvgPing, model.getLastUpdateDelay(Global.LEFT_PLAYER), leftActualDelay);
-            String rightActualDelayString = String.format("(%d - %d) + %d = %d", leftAvgPing, rightAvgPing, model.getLastUpdateDelay(Global.RIGHT_PLAYER), rightActualDelay);
-            System.out.println("--------------------------- TICK ---------------------------");
-
-            System.out.println("----------- LEFT --------------");
-            System.out.println("Calculating left delay");
-            System.out.println("leftAvgPing: " + leftAvgPing);
-            System.out.println("rightAvgPing: " + rightAvgPing);
-            System.out.println("leftDelay: " + leftDelay);
-            System.out.println("rightDelay: " + rightDelay);
-            System.out.println("leftActualDelay: " + leftActualDelay);
-            System.out.println("lastUpdateDelay: " + model.getLastUpdateDelay(Global.LEFT_PLAYER));
-            System.out.println("Calculation of leftActualDelay: " + leftActualDelayString);
-
-            System.out.println("----------- RIGHT --------------");
-            System.out.println("Calculating right delay");
-            System.out.println("leftAvgPing: " + leftAvgPing);
-            System.out.println("rightAvgPing: " + rightAvgPing);
-            System.out.println("leftDelay: " + leftDelay);
-            System.out.println("rightDelay: " + rightDelay);
-            System.out.println("rightActualDelay: " + rightActualDelay);
-            System.out.println("lastUpdateDelay: " + model.getLastUpdateDelay(Global.RIGHT_PLAYER));
-            System.out.println("Calculation of rightActualDelay: " + rightActualDelayString);
-
-            **/
             // Send the update to both players with their corresponding delay
             left.put(state, leftActualDelay);
             right.put(state, rightActualDelay);
@@ -138,17 +112,14 @@ class S_PongView implements Observer {
 
         } else {
 
-            left.put(state);
-
-            // If the game is multicast, the right player will pick up the left
-            // players update
+            // Even if this is a multicast game, the broadcast is sent twice,
+            // this is because one player may have connected over TCP,
+            // This should really be fixed so TCP players are not joined to
+            // Multicast games.
             // TODO: Refactor the NetObjectWriter so we can do something like
             // TODO: clients.update(state) and it will determine the rest
-            if (!model.isMulticast()) {
-
-                right.put(state);
-
-            }
+            left.put(state);
+            right.put(state);
 
         }
 
