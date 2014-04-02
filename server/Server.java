@@ -53,7 +53,6 @@ class Server {
      */
     public void start() {
 
-        //TODO: Accept arguments for hostname and port
         DEBUG.set(false);
         DEBUG.trace("Pong Server");
         //DEBUG.set(false);
