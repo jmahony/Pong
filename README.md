@@ -4,6 +4,8 @@ By: Joshua Mahony (10829953) jm426@uni.brighton.ac.uk
 
 Instructions for running the pong coursework
 
+Note: The server will crash if a client disconnects.
+
 Server.jar command line options
 
 -p the port for the server to use
