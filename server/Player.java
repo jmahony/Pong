@@ -1,9 +1,6 @@
 package server;
 
-import common.GameObject;
-import common.Global;
-import common.NetObjectReader;
-import common.NetObjectWriter;
+import common.*;
 
 import java.awt.event.KeyEvent;
 
@@ -100,7 +97,7 @@ class Player implements Runnable {
             // The round trip time of the last request
             long roundTripTime = Long.parseLong(messages[3], 10);
 
-            System.out.println("Key Press Received from Player " + playerId);
+            DEBUG.trace("Key Press Received from Player " + playerId);
 
             GameObject bat = pongModel.getBats()[playerId];
 

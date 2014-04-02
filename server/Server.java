@@ -7,6 +7,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import common.*;
+import org.apache.commons.cli.*;
 
 /**
  * Start the game server
@@ -31,7 +32,19 @@ class Server {
      */
     private int broadcastPort = 50002;
 
-    public static void main(String args[]) {
+    public static void main(String args[]) throws ParseException {
+
+        // Setup and parse options
+        CommandLineParser parser = new GnuParser();
+        CommandLine cmd = parser.parse(getOptions(), args);
+
+        // If the port option is supplied, set the port
+        if (cmd.hasOption("p")) {
+
+            Global.port = Integer.parseInt(cmd.getOptionValue("p"), 10);
+
+        }
+
         (new Server()).start();
     }
 
@@ -49,6 +62,42 @@ class Server {
         System.out.println("Listening on port " + Global.port);
 
         makeContactWithClients();
+
+    }
+
+    /**
+     * Setup command line options
+     *
+     * @return options
+     */
+    @SuppressWarnings("static-access")
+    private static Options getOptions() {
+
+        Options options = new Options() {{
+            addOption("m",   false, "Whether to multicast the game");
+            addOption("p",   false, "Set the server port");
+            addOption(OptionBuilder.
+                    withArgName("port").
+                    hasArg().
+                    withDescription("If you want to spectate").
+                    create("p"));
+
+            addOption(OptionBuilder.
+                    withArgName("port").
+                    hasArg().
+                    withDescription("If you want to spectate").
+                    create("s"));
+
+            addOption(OptionBuilder.
+                    withArgName("host").
+                    hasArg().
+                    withDescription("The hostname of the server").
+                    create("h"));
+
+            addOption("ddc", false, "Disable delay compensation");
+        }};
+
+        return options;
 
     }
 
