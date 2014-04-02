@@ -204,6 +204,3 @@ class Server {
     }
 
 }
-
-// TODO: Move player into its own file
-
