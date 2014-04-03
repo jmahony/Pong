@@ -57,7 +57,7 @@ class ClientSpectator extends Client {
     public void makeContactWithServer(C_PongModel model, C_PongController cont) {
 
         System.out.println("Attempting to spectate: " +
-                Global.host + ":" + gameMCPort);
+                Global.MC_ADDRESS + ":" + gameMCPort);
 
         try {
 
